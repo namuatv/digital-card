@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 명함 메이커</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface2: #22222e;
+      --border: #2e2e3e;
+      --accent: #7c5cfc;
+      --accent2: #c084fc;
+      --text: #f0f0f8;
+      --muted: #8888a8;
+      --card-h: 220px;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.05rem; }
+    .logo-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center; font-size: .85rem;
+    }
+    .btn-new {
+      font-size: .8rem; font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; padding: 6px 14px;
+      border-radius: 20px; cursor: pointer; transition: opacity .2s;
+    }
+    .btn-new:hover { opacity: .85; }
+
+    .container { display: flex; height: calc(100vh - 57px); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 360px; min-width: 300px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 20px 18px;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+    .section-title {
+      font-size: .72rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .08em;
+      margin-bottom: 10px;
+    }
+    .field-group { display: flex; flex-direction: column; gap: 8px; }
+
+    label { display: block; font-size: .78rem; color: var(--muted); margin-bottom: 3px; }
+    input, textarea, select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 8px 11px;
+      font-size: .85rem;
+      outline: none;
+      transition: border-color .2s;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 56px; }
+
+    /* ── Photo Upload ── */
+    .photo-upload-area {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .photo-preview {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--surface2);
+      border: 2px dashed var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; cursor: pointer; overflow: hidden;
+      flex-shrink: 0; transition: border-color .2s;
+      position: relative;
+    }
+    .photo-preview:hover { border-color: var(--accent); }
+    .photo-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .photo-preview .overlay {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: rgba(0,0,0,.55);
+      display: none; align-items: center; justify-content: center;
+      font-size: .65rem; color: #fff; text-align: center;
+    }
+    .photo-preview:hover .overlay { display: flex; }
+    .photo-right { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .btn-upload {
+      padding: 7px 12px; border-radius: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); font-size: .8rem; cursor: pointer;
+      transition: border-color .2s; text-align: center;
+    }
+    .btn-upload:hover { border-color: var(--accent); }
+    .btn-remove-photo {
+      padding: 5px 10px; border-radius: 7px;
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); font-size: .75rem; cursor: pointer;
+      transition: all .2s; display: none;
+    }
+    .btn-remove-photo.visible { display: block; }
+    .btn-remove-photo:hover { border-color: #e74c3c; color: #e74c3c; }
+    #photo-input { display: none; }
+
+    /* Theme */
+    .theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+    .theme-btn {
+      height: 34px; border-radius: 8px; border: 2px solid transparent;
+      cursor: pointer; transition: border-color .2s, transform .1s;
+    }
+    .theme-btn:hover { transform: scale(1.06); }
+    .theme-btn.active { border-color: #fff; }
+
+    /* Layout */
+    .layout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .layout-btn {
+      padding: 9px 4px; border-radius: 8px;
+      background: var(--surface2); border: 2px solid var(--border);
+      color: var(--muted); font-size: .75rem; cursor: pointer;
+      text-align: center; transition: all .2s;
+    }
+    .layout-btn:hover { border-color: var(--accent); color: var(--text); }
+    .layout-btn.active { border-color: var(--accent); color: var(--text); background: #2a1f5e; }
+    .layout-icon { font-size: 1.2rem; display: block; margin-bottom: 3px; }
+
+    /* SNS */
+    .sns-row { display: flex; gap: 7px; align-items: center; }
+    .sns-row select { width: 108px; min-width: 90px; flex-shrink: 0; }
+    .sns-row input { flex: 1; }
+    .btn-icon {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      width: 32px; height: 32px; border-radius: 7px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: all .2s;
+    }
+    .btn-icon:hover { border-color: #e74c3c; color: #e74c3c; }
+
+    /* Services */
+    .service-item-form {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex; flex-direction: column; gap: 6px;
+      position: relative;
+    }
+    .service-item-form .remove-svc {
+      position: absolute; top: 8px; right: 8px;
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: .85rem; transition: color .2s;
+    }
+    .service-item-form .remove-svc:hover { color: #e74c3c; }
+
+    .btn-add {
+      width: 100%; padding: 7px; border-radius: 8px;
+      background: none; border: 1px dashed var(--border);
+      color: var(--muted); cursor: pointer; font-size: .8rem;
+      transition: all .2s;
+    }
+    .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Action */
+    .action-col { display: flex; flex-direction: column; gap: 8px; }
+    .btn {
+      width: 100%; padding: 11px; border-radius: 9px;
+      font-size: .88rem; font-weight: 600; cursor: pointer;
+      border: none; transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { border-color: var(--accent); }
+    .btn-kakao {
+      background: #FEE500; color: #3C1E1E;
+    }
+    .btn-kakao:hover { filter: brightness(1.05); }
+
+    /* Preview */
+    .preview-area {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 24px; padding: 32px 20px; overflow-y: auto;
+      background: radial-gradient(ellipse at 50% 50%, #1a1030 0%, var(--bg) 70%);
+    }
+    .preview-label {
+      font-size: .72rem; color: var(--muted); text-transform: uppercase;
+      letter-spacing: .12em; margin-bottom: -10px;
+    }
+
+    /* Business Card */
+    .card-wrapper { perspective: 1200px; cursor: pointer; }
+    .card-wrap-inner {
+      width: 400px; height: var(--card-h);
+      transition: transform .6s cubic-bezier(.4,0,.2,1);
+      transform-style: preserve-3d;
+      position: relative;
+    }
+    .card-wrap-inner.flipped { transform: rotateY(180deg); }
+
+    .biz-card {
+      width: 400px; height: var(--card-h);
+      border-radius: 16px;
+      position: absolute; backface-visibility: hidden;
+      overflow: hidden;
+      box-shadow: 0 20px 52px rgba(0,0,0,.55);
+    }
+    .biz-card.back { transform: rotateY(180deg); }
+
+    .biz-card.theme-purple  { background: linear-gradient(135deg,#1e1240 0%,#3b1fa8 50%,#6d28d9 100%); }
+    .biz-card.theme-ocean   { background: linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%); }
+    .biz-card.theme-rose    { background: linear-gradient(135deg,#3d0d1e 0%,#8b1a4a 50%,#d62976 100%); }
+    .biz-card.theme-forest  { background: linear-gradient(135deg,#0d1f0f 0%,#1a4a28 50%,#27ae60 100%); }
+    .biz-card.theme-dark    { background: linear-gradient(135deg,#111 0%,#2c2c2c 100%); }
+    .biz-card.theme-gold    { background: linear-gradient(135deg,#1a1200 0%,#5c3d00 50%,#c9960c 100%); }
+    .biz-card.theme-sky     { background: linear-gradient(135deg,#0a1628 0%,#1a4a8a 50%,#3498db 100%); }
+    .biz-card.theme-white   { background: linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%); }
+    .biz-card.theme-white .card-name,
+    .biz-card.theme-white .card-title,
+    .biz-card.theme-white .card-company,
+    .biz-card.theme-white .card-info span,
+    .biz-card.theme-white .card-bio { color: #222; }
+    .biz-card.theme-white .card-info .icon { color: #6c757d; }
+    .biz-card.theme-white .card-divider  { background: rgba(0,0,0,.12); }
+    .biz-card.theme-white .card-sns-icon { background: rgba(0,0,0,.08); color: #333; }
+
+    .biz-card::after {
+      content:''; position:absolute; inset:0; pointer-events:none; opacity:.35;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+    }
+
+    .card-content {
+      position:relative; z-index:1;
+      height:100%; padding:22px 24px;
+      display:flex;
+    }
+
+    /* Layout: Classic */
+    .layout-classic .card-content { flex-direction:column; justify-content:space-between; }
+    .layout-classic .card-top { display:flex; align-items:flex-start; justify-content:space-between; }
+    .layout-classic .card-avatar {
+      width:50px; height:50px; border-radius:50%;
+      background:rgba(255,255,255,.15);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.3rem; font-weight:700; color:#fff;
+      flex-shrink:0; overflow:hidden;
+    }
+    .layout-classic .card-avatar img { width:100%; height:100%; object-fit:cover; }
+    .card-name    { font-size:1.3rem; font-weight:700; color:#fff; margin-bottom:2px; }
+    .card-title   { font-size:.76rem; color:rgba(255,255,255,.65); margin-bottom:2px; }
+    .card-company { font-size:.76rem; color:rgba(255,255,255,.45); }
+    .card-divider { height:1px; background:rgba(255,255,255,.12); margin:9px 0; }
+    .card-info    { display:flex; flex-direction:column; gap:3px; }
+    .card-info .row { display:flex; align-items:center; gap:6px; }
+    .card-info .icon { font-size:.75rem; color:rgba(255,255,255,.4); width:13px; }
+    .card-info span  { font-size:.73rem; color:rgba(255,255,255,.7); }
+    .card-sns-row { display:flex; gap:5px; }
+    .card-sns-icon {
+      width:24px; height:24px; border-radius:6px;
+      background:rgba(255,255,255,.12);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.68rem; color:rgba(255,255,255,.8);
+    }
+
+    /* Layout: Split */
+    .layout-split .card-content { flex-direction:row; padding:0; }
+    .layout-split .card-left {
+      width:128px; min-width:128px; height:100%;
+      background:rgba(0,0,0,.25);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:8px;
+      padding:18px 12px;
+    }
+    .layout-split .card-avatar {
+      width:62px; height:62px; border-radius:50%;
+      background:rgba(255,255,255,.2);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.5rem; font-weight:700; color:#fff; overflow:hidden;
+    }
+    .layout-split .card-avatar img { width:100%; height:100%; object-fit:cover; }
+    .layout-split .card-name  { font-size:.92rem; text-align:center; }
+    .layout-split .card-title { font-size:.66rem; text-align:center; }
+    .layout-split .card-right { flex:1; padding:18px 16px; display:flex; flex-direction:column; justify-content:space-between; }
+    .layout-split .card-company { font-size:.8rem; margin-bottom:7px; }
+
+    /* Layout: Minimal */
+    .layout-minimal .card-content { flex-direction:column; justify-content:center; gap:7px; }
+    .layout-minimal .card-name { font-size:1.55rem; }
+    .layout-minimal .card-bio { font-size:.73rem; color:rgba(255,255,255,.45); max-width:260px; line-height:1.5; }
+    .layout-minimal .card-bottom { display:flex; justify-content:space-between; align-items:flex-end; margin-top:auto; }
+
+    /* Layout: Bold */
+    .layout-bold .card-content { flex-direction:column; justify-content:flex-end; }
+    .layout-bold .card-top-accent { position:absolute; top:0; right:0; width:150px; height:150px; background:rgba(255,255,255,.06); border-radius:0 16px 0 100%; }
+    .layout-bold .card-name    { font-size:1.65rem; line-height:1.1; margin-bottom:4px; }
+    .layout-bold .card-company { font-size:.88rem; color:rgba(255,255,255,.55); margin-bottom:11px; }
+
+    /* Card back */
+    .card-back-content {
+      position:relative; z-index:1; height:100%; padding:22px;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:12px;
+    }
+    .qr-placeholder {
+      width:90px; height:90px; background:#fff;
+      border-radius:10px; display:flex; align-items:center; justify-content:center;
+      font-size:.62rem; color:#333; text-align:center; padding:8px;
+    }
+    .card-bio { font-size:.73rem; color:rgba(255,255,255,.5); text-align:center; line-height:1.5; max-width:260px; }
+    .card-url { font-size:.7rem; color:rgba(255,255,255,.35); }
+
+    .flip-hint {
+      font-size:.73rem; color:var(--muted);
+      display:flex; align-items:center; gap:5px; cursor:pointer;
+    }
+    .flip-hint:hover { color:var(--accent2); }
+
+    /* Share preview box */
+    .share-preview {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .share-preview strong { color: var(--text); font-size: .82rem; }
+    .share-preview .url-text {
+      display: block; margin-top: 6px;
+      color: var(--accent2); font-size: .72rem;
+      word-break: break-all;
+    }
+
+    /* Toast */
+    .toast {
+      position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+      background:var(--accent); color:#fff;
+      padding:9px 20px; border-radius:24px;
+      font-size:.84rem; font-weight:600;
+      opacity:0; pointer-events:none; transition:opacity .3s;
+      z-index:999; white-space:nowrap;
+    }
+    .toast.show { opacity:1; }
+
+    @media (max-width: 860px) {
+      .container { flex-direction:column; height:auto; }
+      .sidebar { width:100%; border-right:none; border-bottom:1px solid var(--border); }
+      .preview-area { min-height:400px; }
+      .card-wrap-inner, .biz-card { width:330px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🪪</div>
+    디지털 명함 메이커
+  </div>
+  <button class="btn-new" onclick="resetCard()">✨ 새로 만들기</button>
+</header>
+
+<div class="container">
+  <aside class="sidebar">
+
+    <!-- 사진 업로드 -->
+    <div>
+      <div class="section-title">프로필 사진</div>
+      <div class="photo-upload-area">
+        <div class="photo-preview" id="photo-preview" onclick="document.getElementById('photo-input').click()">
+          <span id="photo-placeholder">📷</span>
+          <div class="overlay">변경</div>
+        </div>
+        <div class="photo-right">
+          <label class="btn-upload" onclick="document.getElementById('photo-input').click()">
+            📁 사진 선택
+          </label>
+          <button class="btn-remove-photo" id="btn-remove-photo" onclick="removePhoto()">✕ 사진 제거</button>
+          <div style="font-size:.7rem;color:var(--muted)">JPG·PNG·WebP · 자동 압축</div>
+        </div>
+        <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(this)" />
+      </div>
+    </div>
+
+    <!-- 기본 정보 -->
+    <div>
+      <div class="section-title">기본 정보</div>
+      <div class="field-group">
+        <div><label>이름 *</label><input id="inp-name"    type="text" placeholder="홍길동"           oninput="render()" /></div>
+        <div><label>직함</label>  <input id="inp-title"   type="text" placeholder="CEO · 대표이사"    oninput="render()" /></div>
+        <div><label>회사 / 브랜드</label><input id="inp-company" type="text" placeholder="슬라이스 코퍼레이션" oninput="render()" /></div>
+        <div><label>한 줄 소개</label><textarea id="inp-bio" placeholder="디지털 명함으로 첫인상을 바꿉니다" oninput="render()"></textarea></div>
+      </div>
+    </div>
+
+    <!-- 연락처 -->
+    <div>
+      <div class="section-title">연락처</div>
+      <div class="field-group">
+        <div><label>전화번호</label><input id="inp-phone" type="text" placeholder="010-1234-5678" oninput="render()" /></div>
+        <div><label>이메일</label>  <input id="inp-email" type="text" placeholder="hello@example.com" oninput="render()" /></div>
+        <div><label>웹사이트</label><input id="inp-web"   type="text" placeholder="www.example.com"   oninput="render()" /></div>
+      </div>
+    </div>
+
+    <!-- SNS -->
+    <div>
+      <div class="section-title">SNS 링크</div>
+      <div id="sns-list" class="field-group"></div>
+      <button class="btn-add" onclick="addSns()">＋ SNS 추가</button>
+    </div>
+
+    <!-- 서비스 소개 -->
+    <div>
+      <div class="section-title">서비스 소개</div>
+      <div id="svc-list" class="field-group"></div>
+      <button class="btn-add" onclick="addService()">＋ 서비스 추가</button>
+    </div>
+
+    <!-- 테마 -->
+    <div>
+      <div class="section-title">테마 색상</div>
+      <div class="theme-grid">
+        <div class="theme-btn active" data-theme="purple" style="background:linear-gradient(135deg,#3b1fa8,#6d28d9)" onclick="setTheme('purple',this)" title="퍼플"></div>
+        <div class="theme-btn" data-theme="ocean"  style="background:linear-gradient(135deg,#203a43,#2c5364)"       onclick="setTheme('ocean',this)"  title="오션"></div>
+        <div class="theme-btn" data-theme="rose"   style="background:linear-gradient(135deg,#8b1a4a,#d62976)"       onclick="setTheme('rose',this)"   title="로즈"></div>
+        <div class="theme-btn" data-theme="forest" style="background:linear-gradient(135deg,#1a4a28,#27ae60)"       onclick="setTheme('forest',this)" title="포레스트"></div>
+        <div class="theme-btn" data-theme="dark"   style="background:linear-gradient(135deg,#111,#2c2c2c)"          onclick="setTheme('dark',this)"   title="다크"></div>
+        <div class="theme-btn" data-theme="gold"   style="background:linear-gradient(135deg,#5c3d00,#c9960c)"       onclick="setTheme('gold',this)"   title="골드"></div>
+        <div class="theme-btn" data-theme="sky"    style="background:linear-gradient(135deg,#1a4a8a,#3498db)"       onclick="setTheme('sky',this)"    title="스카이"></div>
+        <div class="theme-btn" data-theme="white"  style="background:linear-gradient(135deg,#f8f9fa,#ced4da);border:1px solid #ccc" onclick="setTheme('white',this)" title="화이트"></div>
+      </div>
+    </div>
+
+    <!-- 레이아웃 -->
+    <div>
+      <div class="section-title">레이아웃</div>
+      <div class="layout-grid">
+        <button class="layout-btn active" onclick="setLayout('classic',this)"><span class="layout-icon">📋</span>클래식</button>
+        <button class="layout-btn"        onclick="setLayout('split',this)">  <span class="layout-icon">⬛</span>스플릿</button>
+        <button class="layout-btn"        onclick="setLayout('minimal',this)"><span class="layout-icon">◻️</span>미니멀</button>
+        <button class="layout-btn"        onclick="setLayout('bold',this)">   <span class="layout-icon">🅱️</span>볼드</button>
+      </div>
+    </div>
+
+    <!-- 저장 / 공유 -->
+    <div>
+      <div class="section-title">저장 / 공유</div>
+      <div class="share-preview" id="share-preview">
+        <strong id="preview-name">이름을 입력하면 공유 링크가 생성돼요</strong>
+        <span class="url-text" id="preview-url"></span>
+      </div>
+      <div class="action-col" style="margin-top:10px">
+        <button class="btn btn-kakao"     onclick="shareKakao()">
+          <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.86 1.5 1.5 4.14 1.5 7.38c0 2.07 1.29 3.9 3.24 4.98l-.78 2.91c-.06.21.18.39.36.27l3.39-2.22c.42.06.84.09 1.29.09 4.14 0 7.5-2.64 7.5-5.88S13.14 1.5 9 1.5z" fill="#3C1E1E"/></svg>
+          카카오톡으로 공유
+        </button>
+        <button class="btn btn-primary"   onclick="copyShareLink()">🔗 링크 복사</button>
+        <button class="btn btn-secondary" onclick="downloadCard()"> ⬇ 이미지 저장</button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- Preview -->
+  <main class="preview-area">
+    <div class="preview-label">명함 미리보기</div>
+    <div class="card-wrapper" onclick="flipCard()">
+      <div class="card-wrap-inner" id="card-inner">
+        <div class="biz-card theme-purple layout-classic front" id="biz-card">
+          <div class="card-content" id="card-content"></div>
+        </div>
+        <div class="biz-card theme-purple back" id="biz-card-back">
+          <div class="card-back-content">
+            <div class="qr-placeholder">QR 코드<br/>(공유 링크)</div>
+            <div class="card-bio"  id="back-bio"></div>
+            <div class="card-url" id="back-url"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-hint" id="flip-hint" onclick="flipCard()">🔄 클릭하면 뒷면을 볼 수 있어요</div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentTheme  = 'purple';
+  let currentLayout = 'classic';
+  let isFlipped     = false;
+  let profileImg    = '';
+
+  const SNS_OPTIONS = [
+    {value:'threads',  label:'Threads',      icon:'🧵'},
+    {value:'instagram',label:'Instagram',    icon:'📸'},
+    {value:'youtube',  label:'YouTube',      icon:'▶️'},
+    {value:'linkedin', label:'LinkedIn',     icon:'💼'},
+    {value:'twitter',  label:'X (Twitter)',  icon:'✖️'},
+    {value:'kakao',    label:'카카오',        icon:'💬'},
+    {value:'naver',    label:'네이버 블로그', icon:'🟢'},
+    {value:'tiktok',   label:'TikTok',       icon:'🎵'},
+    {value:'github',   label:'GitHub',       icon:'🐙'},
+  ];
+
+  const snsList      = [];
+  const servicesList = [];
+
+  // ── Init ──
+  restoreFromUrl();
+  renderSnsList();
+  renderServiceList();
+  render();
+
+  // ── Photo ──
+  function handlePhoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const size   = 120;
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const s   = Math.min(img.width, img.height);
+        const ox  = (img.width  - s) / 2;
+        const oy  = (img.height - s) / 2;
+        ctx.drawImage(img, ox, oy, s, s, 0, 0, size, size);
+        profileImg = canvas.toDataURL('image/jpeg', 0.65);
+        showPhotoPreview(profileImg);
+        render();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  function showPhotoPreview(src) {
+    const prev = document.getElementById('photo-preview');
+    document.getElementById('photo-placeholder').style.display = 'none';
+    let img = prev.querySelector('img');
+    if (!img) { img = document.createElement('img'); prev.insertBefore(img, prev.firstChild); }
+    img.src = src;
+    document.getElementById('btn-remove-photo').classList.add('visible');
+  }
+
+  function removePhoto() {
+    profileImg = '';
+    const prev = document.getElementById('photo-preview');
+    const img  = prev.querySelector('img');
+    if (img) img.remove();
+    document.getElementById('photo-placeholder').style.display = '';
+    document.getElementById('btn-remove-photo').classList.remove('visible');
+    render();
+  }
+
+  // ── SNS ──
+  function addSns() {
+    snsList.push({platform:'instagram', handle:''});
+    renderSnsList(); render();
+  }
+  function removeSns(i) {
+    snsList.splice(i, 1);
+    renderSnsList(); render();
+  }
+  function renderSnsList() {
+    const el = document.getElementById('sns-list');
+    el.innerHTML = '';
+    snsList.forEach((s, i) => {
+      const row = document.createElement('div');
+      row.className = 'sns-row';
+      row.innerHTML = `
+        <select onchange="snsList[${i}].platform=this.value;render()">
+          ${SNS_OPTIONS.map(o=>`<option value="${o.value}" ${o.value===s.platform?'selected':''}>${o.icon} ${o.label}</option>`).join('')}
+        </select>
+        <input type="text" placeholder="아이디 또는 URL" value="${s.handle}"
+          oninput="snsList[${i}].handle=this.value;render()" />
+        <button class="btn-icon" onclick="removeSns(${i})">✕</button>
+      `;
+      el.appendChild(row);
+    });
+  }
+
+  // ── Services ──
+  function addService() {
+    servicesList.push({title:'', desc:''});
+    renderServiceList(); render();
+  }
+  function removeService(i) {
+    servicesList.splice(i, 1);
+    renderServiceList(); render();
+  }
+  function renderServiceList() {
+    const el = document.getElementById('svc-list');
+    el.innerHTML = '';
+    servicesList.forEach((s, i) => {
+      const item = document.createElement('div');
+      item.className = 'service-item-form';
+      item.innerHTML = `
+        <button class="remove-svc" onclick="removeService(${i})">✕</button>
+        <input type="text" placeholder="서비스 이름 (예: 1:1 코칭)" value="${s.title}"
+          oninput="servicesList[${i}].title=this.value;render()" />
+        <textarea placeholder="서비스 설명을 입력하세요" style="min-height:52px"
+          oninput="servicesList[${i}].desc=this.value;render()">${s.desc}</textarea>
+      `;
+      el.appendChild(item);
+    });
+  }
+
+  // ── Theme / Layout ──
+  function setTheme(t, el) {
+    currentTheme = t;
+    document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('biz-card').className     = `biz-card theme-${t} layout-${currentLayout} front`;
+    document.getElementById('biz-card-back').className = `biz-card theme-${t} back`;
+    render();
+  }
+  function setLayout(l, el) {
+    currentLayout = l;
+    document.querySelectorAll('.layout-btn').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('biz-card').className = `biz-card theme-${currentTheme} layout-${l} front`;
+    render();
+  }
+
+  // ── Render ──
+  const g = id => document.getElementById(id)?.value || '';
+
+  function initials(name) {
+    if (!name) return '?';
+    return name.length <= 3 ? name.slice(0,2) : name[0];
+  }
+
+  function avatarHtml(cls) {
+    return profileImg
+      ? `<div class="${cls}"><img src="${profileImg}" alt="프로필" /></div>`
+      : `<div class="${cls}">${initials(g('inp-name') || '내')}</div>`;
+  }
+
+  function snsIconHtml() {
+    return snsList.filter(s=>s.handle).map(s => {
+      const opt = SNS_OPTIONS.find(o=>o.value===s.platform) || {icon:'🔗'};
+      return `<div class="card-sns-icon">${opt.icon}</div>`;
+    }).join('');
+  }
+
+  function infoRows() {
+    const rows = [];
+    const p=g('inp-phone'), e=g('inp-email'), w=g('inp-web');
+    if(p) rows.push(`<div class="row"><span class="icon">📞</span><span>${p}</span></div>`);
+    if(e) rows.push(`<div class="row"><span class="icon">✉️</span><span>${e}</span></div>`);
+    if(w) rows.push(`<div class="row"><span class="icon">🌐</span><span>${w}</span></div>`);
+    return rows.join('');
+  }
+
+  function render() {
+    const name    = g('inp-name')    || '내 이름';
+    const title   = g('inp-title')   || '직함';
+    const company = g('inp-company') || '회사명';
+    const bio     = g('inp-bio')     || '한 줄 소개를 입력하세요';
+    const web     = g('inp-web')     || '';
+    const l       = currentLayout;
+
+    document.getElementById('back-bio').textContent = bio;
+    document.getElementById('back-url').textContent = web;
+
+    const cc = document.getElementById('card-content');
+    if (l === 'classic') {
+      cc.innerHTML = `
+        <div class="card-top">
+          <div><div class="card-name">${name}</div><div class="card-title">${title}</div><div class="card-company">${company}</div></div>
+          ${avatarHtml('card-avatar')}
+        </div>
+        <div><div class="card-divider"></div><div class="card-info">${infoRows()}</div></div>
+        <div class="card-sns-row">${snsIconHtml()}</div>`;
+    } else if (l === 'split') {
+      cc.innerHTML = `
+        <div class="card-left">
+          ${avatarHtml('card-avatar')}
+          <div class="card-name">${name}</div>
+          <div class="card-title">${title}</div>
+        </div>
+        <div class="card-right">
+          <div><div class="card-company">${company}</div><div class="card-divider"></div><div class="card-info">${infoRows()}</div></div>
+          <div class="card-sns-row">${snsIconHtml()}</div>
+        </div>`;
+    } else if (l === 'minimal') {
+      cc.innerHTML = `
+        <div class="card-name">${name}</div>
+        <div class="card-title">${title}${title&&company?' · ':''}${company}</div>
+        <div class="card-bio">${bio}</div>
+        <div class="card-bottom">
+          <div class="card-info">${infoRows()}</div>
+          <div class="card-sns-row">${snsIconHtml()}</div>
+        </div>`;
+    } else if (l === 'bold') {
+      cc.innerHTML = `
+        <div class="card-top-accent"></div>
+        <div class="card-name">${name}</div>
+        <div class="card-company">${title}${title&&company?' · ':''}${company}</div>
+        <div class="card-divider"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div class="card-info">${infoRows()}</div>
+          <div class="card-sns-row">${snsIconHtml()}</div>
+        </div>`;
+    }
+
+    updateSharePreview();
+  }
+
+  // ── Data encode/decode ──
+  function collectData() {
+    return {
+      name:     g('inp-name'),
+      title:    g('inp-title'),
+      company:  g('inp-company'),
+      bio:      g('inp-bio'),
+      phone:    g('inp-phone'),
+      email:    g('inp-email'),
+      web:      g('inp-web'),
+      theme:    currentTheme,
+      layout:   currentLayout,
+      img:      profileImg,
+      sns:      [...snsList],
+      services: [...servicesList],
+    };
+  }
+
+  function encodeData(data) {
+    return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  }
+
+  function buildViewUrl() {
+    const base = location.href.replace('index.html','').replace(/\?.*$/,'');
+    return `${base}view.html?d=${encodeData(collectData())}`;
+  }
+
+  function updateSharePreview() {
+    const name = g('inp-name');
+    const pn   = document.getElementById('preview-name');
+    const pu   = document.getElementById('preview-url');
+    if (name) {
+      pn.textContent = `${name}의 명함 공유 링크`;
+      pu.textContent = buildViewUrl().slice(0, 60) + '…';
+    } else {
+      pn.textContent = '이름을 입력하면 공유 링크가 생성돼요';
+      pu.textContent = '';
+    }
+  }
+
+  // ── Share ──
+  function copyShareLink() {
+    if (!g('inp-name')) { showToast('이름을 먼저 입력해주세요!'); return; }
+    const url = buildViewUrl();
+    navigator.clipboard.writeText(url)
+      .then(() => showToast('링크가 복사됐어요! 카카오톡에 붙여넣기 하세요 🔗'))
+      .catch(() => fallbackCopy(url));
+  }
+
+  function fallbackCopy(text) {
+    const el = document.createElement('textarea');
+    el.value = text; el.style.position='fixed'; el.style.opacity='0';
+    document.body.appendChild(el); el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('링크가 복사됐어요! 🔗');
+  }
+
+  function shareKakao() {
+    if (!g('inp-name')) { showToast('이름을 먼저 입력해주세요!'); return; }
+    const url = buildViewUrl();
+    if (navigator.share) {
+      navigator.share({ title: `${g('inp-name')}의 디지털 명함`, url })
+        .catch(() => fallbackCopy(url));
+    } else {
+      fallbackCopy(url);
+      showToast('링크 복사 완료! 카카오톡 채팅창에 붙여넣기 하세요 💬');
+    }
+  }
+
+  // ── Download ──
+  function downloadCard() {
+    if (isFlipped) flipCard();
+    setTimeout(() => {
+      html2canvas(document.getElementById('biz-card'), {scale:3, useCORS:true, backgroundColor:null})
+        .then(canvas => {
+          const a = document.createElement('a');
+          a.download = `명함_${g('inp-name')||'card'}.png`;
+          a.href = canvas.toDataURL('image/png');
+          a.click();
+          showToast('이미지로 저장했어요! 🎉');
+        });
+    }, 300);
+  }
+
+  // ── Flip ──
+  function flipCard() {
+    isFlipped = !isFlipped;
+    document.getElementById('card-inner').classList.toggle('flipped', isFlipped);
+    document.getElementById('flip-hint').textContent =
+      isFlipped ? '🔄 클릭하면 앞면을 볼 수 있어요' : '🔄 클릭하면 뒷면을 볼 수 있어요';
+  }
+
+  // ── Reset ──
+  function resetCard() {
+    ['inp-name','inp-title','inp-company','inp-bio','inp-phone','inp-email','inp-web']
+      .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    snsList.length = 0; servicesList.length = 0;
+    removePhoto();
+    renderSnsList(); renderServiceList();
+    history.replaceState(null,'',location.pathname);
+    render();
+    showToast('새 명함을 만들어보세요! ✨');
+  }
+
+  // ── Restore from URL ──
+  function restoreFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const raw    = params.get('d');
+    if (!raw) return;
+    try {
+      const d = JSON.parse(decodeURIComponent(escape(atob(raw))));
+      const set = (id, val) => { if(val !== undefined) { const el=document.getElementById(id); if(el) el.value=val; } };
+      set('inp-name', d.name); set('inp-title', d.title); set('inp-company', d.company);
+      set('inp-bio', d.bio);   set('inp-phone', d.phone); set('inp-email', d.email);
+      set('inp-web', d.web);
+      if (d.theme) { const btn=document.querySelector(`[data-theme="${d.theme}"]`); if(btn) setTheme(d.theme,btn); }
+      if (d.layout) { const btn=[...document.querySelectorAll('.layout-btn')].find(b=>b.getAttribute('onclick')?.includes(`'${d.layout}'`)); if(btn) setLayout(d.layout,btn); }
+      if (d.img) { profileImg=d.img; showPhotoPreview(d.img); }
+      if (d.sns)      { d.sns.forEach(s=>snsList.push(s)); }
+      if (d.services) { d.services.forEach(s=>servicesList.push(s)); }
+    } catch {}
+  }
+
+  // ── Toast ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>

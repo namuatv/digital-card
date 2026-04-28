@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 명함</title>
+
+  <!-- OG / SNS 미리보기 (JS로 동적 주입) -->
+  <meta id="og-title"       property="og:title"       content="디지털 명함" />
+  <meta id="og-description" property="og:description"  content="디지털 명함을 확인해보세요" />
+  <meta id="og-image"       property="og:image"        content="" />
+  <meta id="og-url"         property="og:url"          content="" />
+  <meta property="og:type"  content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #7c5cfc;
+      --accent2: #c084fc;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f13;
+      color: #f0f0f8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      width: 100%;
+      max-width: 480px;
+      padding: 48px 24px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+
+    .profile-photo {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(124,92,252,.5);
+      box-shadow: 0 0 0 6px rgba(124,92,252,.12);
+      background: #2a2a3e;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.4rem; font-weight: 700; color: #fff;
+      overflow: hidden;
+    }
+    .profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+    .hero-name { font-size: 1.7rem; font-weight: 800; }
+    .hero-title {
+      font-size: .9rem; color: rgba(255,255,255,.55);
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center;
+    }
+    .hero-title .dot { color: rgba(255,255,255,.2); }
+    .hero-bio {
+      font-size: .88rem; color: rgba(255,255,255,.5);
+      line-height: 1.65; max-width: 320px;
+    }
+
+    /* ── Card ── */
+    .card {
+      width: 100%; max-width: 480px;
+      background: #1a1a22;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 0 16px 14px;
+    }
+
+    .card-title {
+      font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.3);
+      text-transform: uppercase; letter-spacing: .1em;
+      margin-bottom: 14px;
+    }
+
+    /* Contact */
+    .contact-list { display: flex; flex-direction: column; gap: 10px; }
+    .contact-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px;
+      background: #22222e; border-radius: 10px;
+      text-decoration: none; color: inherit;
+      transition: background .2s;
+    }
+    .contact-row:hover { background: #2a2a3e; }
+    .contact-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: rgba(124,92,252,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .contact-info .label { font-size: .7rem; color: rgba(255,255,255,.35); }
+    .contact-info .value { font-size: .88rem; color: #f0f0f8; }
+
+    /* SNS */
+    .sns-grid {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .sns-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 14px;
+      background: #22222e; border-radius: 24px;
+      text-decoration: none; color: rgba(255,255,255,.7);
+      font-size: .82rem; transition: background .2s, color .2s;
+    }
+    .sns-btn:hover { background: rgba(124,92,252,.2); color: #fff; }
+
+    /* Services */
+    .service-list { display: flex; flex-direction: column; gap: 10px; }
+    .service-item {
+      padding: 14px 16px;
+      background: #22222e; border-radius: 12px;
+      border-left: 3px solid var(--accent);
+    }
+    .service-item .s-title { font-size: .9rem; font-weight: 600; margin-bottom: 4px; }
+    .service-item .s-desc { font-size: .8rem; color: rgba(255,255,255,.5); line-height: 1.6; }
+
+    /* Action bar */
+    .action-bar {
+      width: 100%; max-width: 480px;
+      padding: 16px 16px 8px;
+      display: flex; gap: 10px;
+    }
+    .btn {
+      flex: 1; padding: 13px;
+      border-radius: 12px; border: none;
+      font-size: .9rem; font-weight: 700;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-kakao {
+      background: #FEE500; color: #3C1E1E;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-kakao:hover { filter: brightness(1.05); }
+    .btn-share {
+      background: #1a1a22; color: #f0f0f8;
+      border: 1px solid #2e2e3e;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-share:hover { border-color: var(--accent); }
+
+    /* CTA footer */
+    .footer-cta {
+      padding: 20px 16px 40px;
+      text-align: center;
+    }
+    .footer-cta p { font-size: .78rem; color: rgba(255,255,255,.3); margin-bottom: 12px; }
+    .btn-make {
+      display: inline-block;
+      padding: 11px 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border-radius: 24px;
+      font-size: .88rem; font-weight: 700;
+      text-decoration: none; transition: opacity .2s;
+    }
+    .btn-make:hover { opacity: .88; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #333; color: #fff;
+      padding: 10px 22px; border-radius: 24px;
+      font-size: .84rem; font-weight: 600;
+      opacity: 0; pointer-events: none; transition: opacity .3s;
+      z-index: 999; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Empty state */
+    .empty {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+      padding: 60px 24px; text-align: center;
+    }
+    .empty .icon { font-size: 3rem; }
+    .empty h2 { font-size: 1.1rem; }
+    .empty p { font-size: .85rem; color: rgba(255,255,255,.4); }
+  </style>
+</head>
+<body>
+
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Decode ──
+  function decodeData(str) {
+    try { return JSON.parse(decodeURIComponent(escape(atob(str)))); } catch { return null; }
+  }
+
+  const SNS_META = {
+    threads:  { label:'Threads',      icon:'🧵' },
+    instagram:{ label:'Instagram',    icon:'📸' },
+    youtube:  { label:'YouTube',      icon:'▶️' },
+    linkedin: { label:'LinkedIn',     icon:'💼' },
+    twitter:  { label:'X',            icon:'✖️' },
+    kakao:    { label:'카카오',        icon:'💬' },
+    naver:    { label:'네이버 블로그', icon:'🟢' },
+    tiktok:   { label:'TikTok',       icon:'🎵' },
+    github:   { label:'GitHub',       icon:'🐙' },
+  };
+
+  const params = new URLSearchParams(location.search);
+  const raw    = params.get('d');
+  const d      = raw ? decodeData(raw) : null;
+  const app    = document.getElementById('app');
+
+  if (!d || !d.name) {
+    app.innerHTML = `
+      <div class="empty">
+        <div class="icon">🪪</div>
+        <h2>명함 정보를 찾을 수 없어요</h2>
+        <p>링크가 잘못됐거나 만료됐을 수 있어요</p>
+        <a class="btn-make" href="index.html">내 명함 만들기</a>
+      </div>`;
+  } else {
+    // Update OG tags
+    document.title = `${d.name}의 디지털 명함`;
+    document.getElementById('og-title').content       = `${d.name} · ${d.title || ''} | 디지털 명함`;
+    document.getElementById('og-description').content = d.bio || `${d.company || ''} ${d.title || ''}`;
+    document.getElementById('og-url').content         = location.href;
+    if (d.img) document.getElementById('og-image').content = d.img;
+
+    // ── Render ──
+    const initials = n => n ? (n.length <= 3 ? n.slice(0,2) : n[0]) : '?';
+
+    const photoHtml = d.img
+      ? `<div class="profile-photo"><img src="${d.img}" alt="프로필" /></div>`
+      : `<div class="profile-photo">${initials(d.name)}</div>`;
+
+    const titleParts = [d.title, d.company].filter(Boolean);
+    const titleHtml  = titleParts.map((t,i) =>
+      i < titleParts.length-1 ? `${t} <span class="dot">·</span>` : t
+    ).join(' ');
+
+    const contactHtml = (() => {
+      const rows = [];
+      if (d.phone) rows.push(`<a class="contact-row" href="tel:${d.phone}"><div class="contact-icon">📞</div><div class="contact-info"><div class="label">전화</div><div class="value">${d.phone}</div></div></a>`);
+      if (d.email) rows.push(`<a class="contact-row" href="mailto:${d.email}"><div class="contact-icon">✉️</div><div class="contact-info"><div class="label">이메일</div><div class="value">${d.email}</div></div></a>`);
+      if (d.web)   rows.push(`<a class="contact-row" href="${d.web.startsWith('http')?d.web:'https://'+d.web}" target="_blank"><div class="contact-icon">🌐</div><div class="contact-info"><div class="label">웹사이트</div><div class="value">${d.web}</div></div></a>`);
+      return rows.length ? `<div class="card"><div class="card-title">연락처</div><div class="contact-list">${rows.join('')}</div></div>` : '';
+    })();
+
+    const snsHtml = (() => {
+      if (!d.sns?.length) return '';
+      const btns = d.sns.filter(s=>s.handle).map(s => {
+        const m = SNS_META[s.platform] || {label:s.platform, icon:'🔗'};
+        const href = s.handle.startsWith('http') ? s.handle : '#';
+        return `<a class="sns-btn" href="${href}" target="_blank">${m.icon} ${m.label} <span style="color:rgba(255,255,255,.4)">${s.handle}</span></a>`;
+      });
+      return btns.length ? `<div class="card"><div class="card-title">SNS</div><div class="sns-grid">${btns.join('')}</div></div>` : '';
+    })();
+
+    const servicesHtml = (() => {
+      if (!d.services?.length) return '';
+      const items = d.services.filter(s=>s.title||s.desc).map(s =>
+        `<div class="service-item"><div class="s-title">${s.title||''}</div>${s.desc?`<div class="s-desc">${s.desc}</div>`:''}</div>`
+      );
+      return items.length ? `<div class="card"><div class="card-title">서비스 소개</div><div class="service-list">${items.join('')}</div></div>` : '';
+    })();
+
+    app.innerHTML = `
+      <div class="hero">
+        ${photoHtml}
+        <div class="hero-name">${d.name}</div>
+        ${titleHtml ? `<div class="hero-title">${titleHtml}</div>` : ''}
+        ${d.bio ? `<div class="hero-bio">${d.bio}</div>` : ''}
+      </div>
+
+      ${contactHtml}
+      ${snsHtml}
+      ${servicesHtml}
+
+      <div class="action-bar">
+        <button class="btn btn-kakao" onclick="shareKakao()">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.86 1.5 1.5 4.14 1.5 7.38c0 2.07 1.29 3.9 3.24 4.98l-.78 2.91c-.06.21.18.39.36.27l3.39-2.22c.42.06.84.09 1.29.09 4.14 0 7.5-2.64 7.5-5.88S13.14 1.5 9 1.5z" fill="#3C1E1E"/></svg>
+          카카오톡 공유
+        </button>
+        <button class="btn btn-share" onclick="shareLink()">🔗 링크 복사</button>
+      </div>
+
+      <div class="footer-cta">
+        <p>이 명함은 디지털 명함 메이커로 만들었어요</p>
+        <a class="btn-make" href="index.html">나도 명함 만들기 →</a>
+      </div>
+    `;
+  }
+
+  // ── Share ──
+  function shareLink() {
+    navigator.clipboard.writeText(location.href)
+      .then(() => showToast('링크가 복사됐어요! 🔗'))
+      .catch(() => {
+        const input = document.createElement('input');
+        input.value = location.href;
+        document.body.appendChild(input);
+        input.select(); document.execCommand('copy');
+        document.body.removeChild(input);
+        showToast('링크가 복사됐어요! 🔗');
+      });
+  }
+
+  function shareKakao() {
+    if (navigator.share) {
+      navigator.share({
+        title: document.title,
+        text: d ? `${d.name}의 디지털 명함` : '디지털 명함',
+        url: location.href
+      }).catch(() => shareLink());
+    } else {
+      // Fallback: KakaoTalk 앱 딥링크 (PC에서는 링크 복사)
+      const kakaoUrl = `kakaolink://send?text=${encodeURIComponent(location.href)}`;
+      const a = document.createElement('a');
+      a.href = kakaoUrl;
+      a.click();
+      setTimeout(() => shareLink(), 800);
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>
