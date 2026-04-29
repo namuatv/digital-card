@@ -1,400 +1,258 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>디지털 명함</title>
-  <meta id="og-title"       property="og:title"       content="디지털 명함" />
-  <meta id="og-description" property="og:description" content="디지털 명함을 확인해보세요" />
-  <meta id="og-image"       property="og:image"        content="" />
-  <meta property="og:type"  content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>디지털 명함</title>
+<meta id="og-title"       property="og:title"       content="디지털 명함">
+<meta id="og-description" property="og:description" content="디지털 명함을 확인해보세요">
+<meta id="og-image"       property="og:image"        content="">
+<meta property="og:type"  content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#c9a84c;--gold2:#e8c96a;--bg:#09090f;--sur:#111118;--bdr:#252530;--tx:#f0ede8;--mu:#6b6b80}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;align-items:center}
 
-    :root {
-      --accent: #7c5cfc;
-      --accent2: #c084fc;
-      --bg: #0f0f13;
-      --surface: #1a1a22;
-      --border: #2e2e3e;
-    }
+/* ── 명함 섹션 ── */
+.card-section{width:100%;background:radial-gradient(ellipse at 50% 30%,#1a1205 0%,var(--bg) 65%);display:flex;flex-direction:column;align-items:center;padding:52px 20px 36px;gap:18px}
 
-    body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: #f0f0f8;
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center;
-    }
+.biz-card{width:min(400px,calc(100vw - 40px));height:240px;border-radius:12px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.75),0 2px 0 rgba(255,255,255,.04) inset;position:relative;flex-shrink:0}
 
-    /* ── 카드 영역 ── */
-    .card-section {
-      width: 100%;
-      background: radial-gradient(ellipse at 50% 40%, #1a1030 0%, var(--bg) 70%);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 48px 20px 32px;
-      gap: 20px;
-    }
+/* themes */
+.t-navy     {background:linear-gradient(145deg,#04111f,#0a1e35,#0f2847)}
+.t-charcoal {background:linear-gradient(145deg,#0d0d0d,#1a1a1a,#242424)}
+.t-burgundy {background:linear-gradient(145deg,#1a0408,#3d0c18,#5c1226)}
+.t-green    {background:linear-gradient(145deg,#030e07,#0a2614,#0f3a1e)}
+.t-ivory    {background:linear-gradient(145deg,#f5f0e8,#ede5d0)}
+.t-rose     {background:linear-gradient(145deg,#1a0a0e,#3d1520,#5c2030)}
+.t-midnight {background:linear-gradient(145deg,#04080f,#080f1e,#0c1628)}
+.t-purple   {background:linear-gradient(145deg,#0d0418,#1a0835,#28105a)}
 
-    /* ── Business Card (에디터와 동일한 디자인) ── */
-    .biz-card {
-      width: min(400px, calc(100vw - 40px));
-      height: 220px;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 24px 60px rgba(0,0,0,.65);
-      position: relative;
-      flex-shrink: 0;
-    }
+/* gold shimmer */
+.biz-card:not(.t-ivory)::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(110deg,transparent 20%,rgba(201,168,76,.045) 50%,transparent 80%)}
+/* noise */
+.biz-card::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E")}
 
-    /* themes */
-    .theme-purple { background: linear-gradient(135deg,#1e1240 0%,#3b1fa8 50%,#6d28d9 100%); }
-    .theme-ocean  { background: linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%); }
-    .theme-rose   { background: linear-gradient(135deg,#3d0d1e 0%,#8b1a4a 50%,#d62976 100%); }
-    .theme-forest { background: linear-gradient(135deg,#0d1f0f 0%,#1a4a28 50%,#27ae60 100%); }
-    .theme-dark   { background: linear-gradient(135deg,#111 0%,#2c2c2c 100%); }
-    .theme-gold   { background: linear-gradient(135deg,#1a1200 0%,#5c3d00 50%,#c9960c 100%); }
-    .theme-sky    { background: linear-gradient(135deg,#0a1628 0%,#1a4a8a 50%,#3498db 100%); }
-    .theme-white  { background: linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%); }
+/* card content */
+.card-inner{position:relative;z-index:4;padding:26px 28px;height:100%;display:flex;flex-direction:column;justify-content:space-between}
+.c-name{font-family:'Noto Serif KR',serif;font-size:1.35rem;font-weight:700;color:#fff;letter-spacing:.04em;line-height:1.2}
+.c-title{font-size:.68rem;color:rgba(255,255,255,.55);letter-spacing:.14em;margin-top:4px;text-transform:uppercase}
+.c-company{font-size:.72rem;color:rgba(255,255,255,.35);letter-spacing:.06em;margin-top:2px}
+.c-divider{height:1px;background:linear-gradient(90deg,rgba(201,168,76,.6),rgba(201,168,76,.15),transparent);margin:10px 0}
+.c-info{display:flex;flex-direction:column;gap:4px}
+.c-info-row{display:flex;align-items:center;gap:7px}
+.c-info-row .ic{font-size:.68rem;opacity:.4;width:13px;flex-shrink:0}
+.c-info-row span{font-size:.68rem;color:rgba(255,255,255,.65);letter-spacing:.02em}
+.c-avatar{width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:600;color:rgba(255,255,255,.9);overflow:hidden;flex-shrink:0;font-family:'Noto Serif KR',serif}
+.c-avatar img{width:100%;height:100%;object-fit:cover}
+.c-top{display:flex;justify-content:space-between;align-items:flex-start}
+.c-sns{display:flex;gap:5px}
+.c-sns-ic{width:22px;height:22px;border-radius:4px;border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-size:.63rem;color:rgba(255,255,255,.65)}
 
-    .biz-card::after {
-      content:''; position:absolute; inset:0; pointer-events:none; opacity:.35;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
-    }
+/* ivory overrides */
+.t-ivory .c-name{color:#1a1408}
+.t-ivory .c-title{color:rgba(26,20,8,.45)}
+.t-ivory .c-company{color:rgba(26,20,8,.35)}
+.t-ivory .c-info-row span{color:rgba(26,20,8,.6)}
+.t-ivory .c-divider{background:linear-gradient(90deg,rgba(139,105,20,.5),rgba(139,105,20,.15),transparent)}
+.t-ivory .c-avatar{border-color:rgba(139,105,20,.4);color:#3d2f08}
+.t-ivory .c-sns-ic{border-color:rgba(139,105,20,.3);color:rgba(26,20,8,.6)}
 
-    .card-content {
-      position: relative; z-index: 1;
-      height: 100%; padding: 22px 24px;
-      display: flex;
-    }
+/* split */
+.card-inner.split{flex-direction:row;padding:0}
+.split .c-left{width:128px;height:100%;background:rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px 12px;border-right:1px solid rgba(201,168,76,.12)}
+.split .c-left .c-avatar{width:56px;height:56px;font-size:1.3rem}
+.split .c-left .c-name{font-size:.9rem;text-align:center;letter-spacing:.04em}
+.split .c-left .c-title{font-size:.58rem;text-align:center;letter-spacing:.1em}
+.split .c-right{flex:1;padding:20px 18px;display:flex;flex-direction:column;justify-content:space-between}
+/* minimal */
+.card-inner.minimal{justify-content:center;gap:7px}
+.minimal .c-name{font-size:1.55rem;letter-spacing:.06em}
+.minimal .c-bio{font-size:.68rem;color:rgba(255,255,255,.38);line-height:1.65;max-width:240px;letter-spacing:.02em}
+.minimal .c-bottom-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:auto}
+/* bold */
+.card-inner.bold{justify-content:flex-end}
+.bold .c-corner{position:absolute;top:0;right:0;width:100px;height:100px;border-bottom:1px solid rgba(201,168,76,.15);border-left:1px solid rgba(201,168,76,.15);border-radius:0 12px 0 80%}
+.bold .c-name{font-size:1.6rem;font-weight:700;letter-spacing:.06em;line-height:1.1}
+.bold .c-subtitle{font-size:.72rem;color:rgba(255,255,255,.45);letter-spacing:.14em;margin:5px 0 12px;text-transform:uppercase}
 
-    /* white theme text overrides */
-    .theme-white .card-name,
-    .theme-white .card-title,
-    .theme-white .card-company,
-    .theme-white .card-info span,
-    .theme-white .card-bio  { color: #222 !important; }
-    .theme-white .card-info .icon  { color: #666 !important; }
-    .theme-white .card-divider     { background: rgba(0,0,0,.12) !important; }
-    .theme-white .card-sns-icon    { background: rgba(0,0,0,.08) !important; color:#333 !important; }
+/* ── bio ── */
+.card-bio{font-size:.85rem;color:rgba(255,255,255,.4);text-align:center;max-width:340px;line-height:1.75;letter-spacing:.03em}
 
-    /* shared card elements */
-    .card-name    { font-size:1.3rem; font-weight:700; color:#fff; margin-bottom:2px; }
-    .card-title   { font-size:.76rem; color:rgba(255,255,255,.65); margin-bottom:2px; }
-    .card-company { font-size:.76rem; color:rgba(255,255,255,.45); }
-    .card-divider { height:1px; background:rgba(255,255,255,.12); margin:9px 0; }
-    .card-info    { display:flex; flex-direction:column; gap:3px; }
-    .card-info .row { display:flex; align-items:center; gap:6px; }
-    .card-info .icon { font-size:.75rem; color:rgba(255,255,255,.4); width:13px; }
-    .card-info span  { font-size:.73rem; color:rgba(255,255,255,.7); }
-    .card-sns-row { display:flex; gap:5px; }
-    .card-sns-icon {
-      width:24px; height:24px; border-radius:6px;
-      background:rgba(255,255,255,.12);
-      display:flex; align-items:center; justify-content:center;
-      font-size:.68rem; color:rgba(255,255,255,.8);
-    }
-    .card-avatar {
-      border-radius: 50%;
-      background: rgba(255,255,255,.15);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: #fff; overflow: hidden; flex-shrink: 0;
-    }
-    .card-avatar img { width:100%; height:100%; object-fit:cover; }
-    .card-bio { font-size:.73rem; color:rgba(255,255,255,.45); max-width:260px; line-height:1.5; }
+/* ── 구분선 ── */
+.gold-line{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 
-    /* Layout: Classic */
-    .layout-classic .card-content { flex-direction:column; justify-content:space-between; }
-    .layout-classic .card-top { display:flex; align-items:flex-start; justify-content:space-between; }
-    .layout-classic .card-avatar { width:50px; height:50px; font-size:1.3rem; }
+/* ── 연락처 ── */
+.section{width:100%;max-width:440px;padding:0 20px 16px}
+.sec-label{font-size:.62rem;font-weight:500;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.16em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--bdr)}
 
-    /* Layout: Split */
-    .layout-split .card-content { flex-direction:row; padding:0; }
-    .layout-split .card-left {
-      width:128px; min-width:128px; height:100%;
-      background:rgba(0,0,0,.25);
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center; gap:8px; padding:18px 12px;
-    }
-    .layout-split .card-avatar { width:62px; height:62px; font-size:1.5rem; }
-    .layout-split .card-name  { font-size:.92rem; text-align:center; }
-    .layout-split .card-title { font-size:.66rem; text-align:center; }
-    .layout-split .card-right { flex:1; padding:18px 16px; display:flex; flex-direction:column; justify-content:space-between; }
-    .layout-split .card-company { font-size:.8rem; margin-bottom:7px; }
+.contact-list{display:flex;flex-direction:column;gap:7px}
+.contact-btn{display:flex;align-items:center;gap:13px;padding:12px 16px;background:var(--sur);border-radius:10px;text-decoration:none;color:var(--tx);border:1px solid var(--bdr);transition:all .2s}
+.contact-btn:hover{border-color:rgba(201,168,76,.35);background:#14140e}
+.c-icon{width:36px;height:36px;border-radius:8px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.15);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.c-label{font-size:.67rem;color:var(--mu);letter-spacing:.06em}
+.c-val{font-size:.85rem;letter-spacing:.02em}
 
-    /* Layout: Minimal */
-    .layout-minimal .card-content { flex-direction:column; justify-content:center; gap:7px; }
-    .layout-minimal .card-name { font-size:1.55rem; }
-    .layout-minimal .card-bottom { display:flex; justify-content:space-between; align-items:flex-end; margin-top:auto; }
+/* ── SNS ── */
+.sns-grid{display:flex;flex-wrap:wrap;gap:8px}
+.sns-btn{display:flex;align-items:center;gap:7px;padding:8px 14px;background:var(--sur);border:1px solid var(--bdr);border-radius:24px;text-decoration:none;color:rgba(255,255,255,.6);font-size:.8rem;letter-spacing:.02em;transition:all .2s}
+.sns-btn:hover{border-color:rgba(201,168,76,.35);color:var(--tx)}
 
-    /* Layout: Bold */
-    .layout-bold .card-content { flex-direction:column; justify-content:flex-end; }
-    .layout-bold .card-top-accent { position:absolute; top:0; right:0; width:150px; height:150px; background:rgba(255,255,255,.06); border-radius:0 16px 0 100%; }
-    .layout-bold .card-name    { font-size:1.65rem; line-height:1.1; margin-bottom:4px; }
-    .layout-bold .card-company { font-size:.88rem; color:rgba(255,255,255,.55); margin-bottom:11px; }
+/* ── 서비스 ── */
+.svc-list{display:flex;flex-direction:column;gap:8px}
+.svc-card{background:var(--sur);border:1px solid var(--bdr);border-left:2px solid var(--gold);border-radius:10px;padding:14px 16px}
+.svc-title{font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;letter-spacing:.03em;margin-bottom:5px}
+.svc-desc{font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.7;letter-spacing:.02em}
 
-    /* ── 연락처 버튼 ── */
-    .contact-section {
-      width: 100%; max-width: 440px;
-      padding: 0 20px 16px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
+/* ── 하단 버튼 ── */
+.bottom{width:100%;max-width:440px;padding:4px 20px 52px;display:flex;flex-direction:column;gap:8px}
+.share-row{display:flex;gap:8px}
+.btn{flex:1;padding:13px;border-radius:10px;border:none;font-size:.85rem;font-weight:500;cursor:pointer;font-family:inherit;letter-spacing:.03em;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s}
+.btn-kakao{background:#FEE500;color:#3C1E1E}
+.btn-kakao:hover{filter:brightness(1.07)}
+.btn-copy{background:var(--sur);color:rgba(255,255,255,.6);border:1px solid var(--bdr)}
+.btn-copy:hover{border-color:rgba(201,168,76,.4);color:var(--tx)}
+.btn-make{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,#8b6914,var(--gold),#e8c96a);color:#1a1200;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .2s;text-decoration:none}
+.btn-make:hover{opacity:.9}
 
-    .contact-btn {
-      display: flex; align-items: center; gap: 12px;
-      padding: 13px 16px;
-      background: var(--surface);
-      border-radius: 12px;
-      text-decoration: none; color: #f0f0f8;
-      border: 1px solid var(--border);
-      transition: background .2s, border-color .2s;
-    }
-    .contact-btn:hover { background: #22222e; border-color: var(--accent); }
-    .contact-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: rgba(124,92,252,.15);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.05rem; flex-shrink: 0;
-    }
-    .contact-label { font-size: .7rem; color: rgba(255,255,255,.35); }
-    .contact-value { font-size: .88rem; }
+/* ── empty ── */
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:80px 24px;text-align:center}
 
-    /* ── SNS ── */
-    .sns-section {
-      width: 100%; max-width: 440px;
-      padding: 0 20px 16px;
-    }
-    .sns-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .sns-btn {
-      display: flex; align-items: center; gap: 7px;
-      padding: 9px 14px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 24px; text-decoration: none;
-      color: rgba(255,255,255,.7); font-size: .82rem;
-      transition: background .2s, border-color .2s;
-    }
-    .sns-btn:hover { background: rgba(124,92,252,.2); border-color: var(--accent); color:#fff; }
-
-    /* ── 서비스 소개 ── */
-    .services-section {
-      width: 100%; max-width: 440px;
-      padding: 0 20px 16px;
-    }
-    .section-label {
-      font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.3);
-      text-transform: uppercase; letter-spacing: .1em;
-      margin-bottom: 10px;
-    }
-    .service-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: 12px; padding: 14px 16px;
-      margin-bottom: 8px;
-    }
-    .service-card .s-title { font-size: .9rem; font-weight: 600; margin-bottom: 4px; }
-    .service-card .s-desc  { font-size: .8rem; color: rgba(255,255,255,.5); line-height: 1.65; }
-
-    /* ── 하단 공유/CTA ── */
-    .bottom-section {
-      width: 100%; max-width: 440px;
-      padding: 4px 20px 48px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .share-row { display: flex; gap: 8px; }
-    .btn {
-      flex: 1; padding: 13px;
-      border-radius: 12px; border: none;
-      font-size: .88rem; font-weight: 700;
-      cursor: pointer; transition: all .2s;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .btn-kakao { background: #FEE500; color: #3C1E1E; }
-    .btn-kakao:hover { filter: brightness(1.05); }
-    .btn-copy  { background: var(--surface); color: #f0f0f8; border: 1px solid var(--border); }
-    .btn-copy:hover  { border-color: var(--accent); }
-    .btn-make {
-      width: 100%; padding: 13px;
-      border-radius: 12px; border: none;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; font-size: .88rem; font-weight: 700;
-      cursor: pointer; text-decoration: none;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: opacity .2s;
-    }
-    .btn-make:hover { opacity: .88; }
-
-    /* ── Toast ── */
-    .toast {
-      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: #333; color: #fff;
-      padding: 10px 22px; border-radius: 24px;
-      font-size: .84rem; font-weight: 600;
-      opacity: 0; pointer-events: none; transition: opacity .3s;
-      z-index: 999; white-space: nowrap;
-    }
-    .toast.show { opacity: 1; }
-
-    /* ── 빈 상태 ── */
-    .empty {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 14px;
-      padding: 80px 24px; text-align: center;
-    }
-  </style>
+/* ── toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1408;border:1px solid var(--gold);color:var(--gold);padding:9px 22px;border-radius:24px;font-size:.8rem;font-weight:500;opacity:0;pointer-events:none;transition:opacity .25s;z-index:999;white-space:nowrap;letter-spacing:.04em}
+.toast.on{opacity:1}
+</style>
 </head>
 <body>
 <div id="app"></div>
 <div class="toast" id="toast"></div>
 
 <script>
-  const SNS_META = {
-    threads:  {label:'Threads',      icon:'🧵'},
-    instagram:{label:'Instagram',    icon:'📸'},
-    youtube:  {label:'YouTube',      icon:'▶️'},
-    linkedin: {label:'LinkedIn',     icon:'💼'},
-    twitter:  {label:'X',            icon:'✖️'},
-    kakao:    {label:'카카오',        icon:'💬'},
-    naver:    {label:'네이버 블로그', icon:'🟢'},
-    tiktok:   {label:'TikTok',       icon:'🎵'},
-    github:   {label:'GitHub',       icon:'🐙'},
-  };
+var SNS_META={
+  threads:{l:'Threads',e:'🧵'},instagram:{l:'Instagram',e:'📸'},
+  youtube:{l:'YouTube',e:'▶️'},linkedin:{l:'LinkedIn',e:'💼'},
+  twitter:{l:'X',e:'✖️'},kakao:{l:'카카오',e:'💬'},
+  naver:{l:'네이버',e:'🟢'},tiktok:{l:'TikTok',e:'🎵'},github:{l:'GitHub',e:'🐙'}
+};
 
-  function decode(str) {
-    try { return JSON.parse(decodeURIComponent(escape(atob(str)))); } catch { return null; }
-  }
-  function initials(n) { return n ? (n.length<=3 ? n.slice(0,2) : n[0]) : '?'; }
+function dec(s){try{return JSON.parse(decodeURIComponent(escape(atob(s))));}catch{return null;}}
+function ini(n){return n?(n.trim().length<=3?n.trim().slice(0,2):n.trim()[0]):'?';}
 
-  const raw = new URLSearchParams(location.search).get('d');
-  const d   = raw ? decode(raw) : null;
-  const app = document.getElementById('app');
+var raw=new URLSearchParams(location.search).get('d');
+var d=raw?dec(raw):null;
+var app=document.getElementById('app');
 
-  if (!d || !d.name) {
-    // 데이터 없이 접속 → 2초 후 에디터로 이동
-    app.innerHTML = `
-      <div class="empty">
-        <div style="font-size:3rem">🪪</div>
-        <h2 style="font-size:1.1rem">명함 링크가 없어요</h2>
-        <p style="font-size:.85rem;color:rgba(255,255,255,.4);line-height:1.6">
-          에디터에서 정보를 입력하고<br>
-          <strong style="color:#c084fc">🔗 링크 복사</strong> 버튼을 눌러서 공유하세요
-        </p>
-        <p style="font-size:.75rem;color:rgba(255,255,255,.25);margin-top:4px">잠시 후 에디터로 이동합니다…</p>
-        <a class="btn-make" href="index.html" style="margin-top:8px;max-width:220px">지금 바로 명함 만들기 →</a>
-      </div>`;
-    setTimeout(function(){ location.href = 'index.html'; }, 2500);
-  } else {
-    // OG 태그 업데이트
-    document.title = `${d.name} | 디지털 명함`;
-    document.getElementById('og-title').content       = `${d.name}${d.title?' · '+d.title:''}`;
-    document.getElementById('og-description').content = d.bio || `${d.company||''} ${d.title||''}`.trim();
-    if (d.img) document.getElementById('og-image').content = d.img;
+if(!d||!d.name){
+  app.innerHTML='<div class="empty">'+
+    '<div style="font-size:2.5rem;margin-bottom:4px">🪪</div>'+
+    '<h2 style="font-size:1rem;font-weight:500;letter-spacing:.04em;color:rgba(255,255,255,.6)">명함 링크가 없어요</h2>'+
+    '<p style="font-size:.8rem;color:rgba(255,255,255,.3);line-height:1.8;letter-spacing:.03em">에디터에서 정보를 입력한 뒤<br>링크 복사 버튼을 눌러 공유하세요</p>'+
+    '<a class="btn-make" href="index.html" style="margin-top:12px;max-width:220px;border-radius:24px">명함 만들기 →</a>'+
+  '</div>';
+  setTimeout(function(){location.href='index.html';},3000);
+} else {
+  document.title=d.name+' | 디지털 명함';
+  document.getElementById('og-title').content=d.name+(d.title?' · '+d.title:'');
+  document.getElementById('og-description').content=d.bio||(d.company||'')+(d.title?' '+d.title:'');
+  if(d.photo) document.getElementById('og-image').content=d.photo;
 
-    const theme  = d.theme  || 'purple';
-    const layout = d.layout || 'classic';
+  var t=d.theme||'navy', l=d.layout||'classic';
+  var isIvory=(t==='ivory');
 
-    // ── 카드 HTML ──
-    const avatarHtml = sz => d.img
-      ? `<div class="card-avatar" style="width:${sz}px;height:${sz}px"><img src="${d.img}" alt="프로필"/></div>`
-      : `<div class="card-avatar" style="width:${sz}px;height:${sz}px;font-size:${sz*.26}rem">${initials(d.name)}</div>`;
+  /* avatar */
+  var av=d.photo
+    ?'<div class="c-avatar"><img src="'+d.photo+'"></div>'
+    :'<div class="c-avatar">'+ini(d.name)+'</div>';
 
-    const infoRows = () => {
-      let r = '';
-      if(d.phone) r+=`<div class="row"><span class="icon">📞</span><span>${d.phone}</span></div>`;
-      if(d.email) r+=`<div class="row"><span class="icon">✉️</span><span>${d.email}</span></div>`;
-      if(d.web)   r+=`<div class="row"><span class="icon">🌐</span><span>${d.web}</span></div>`;
-      return r;
-    };
-    const snsIcons = () => (d.sns||[]).filter(s=>s.handle).map(s=>{
-      const m = SNS_META[s.platform]||{icon:'🔗'};
-      return `<div class="card-sns-icon">${m.icon}</div>`;
-    }).join('');
+  /* info rows */
+  var info='';
+  if(d.phone) info+='<div class="c-info-row"><span class="ic">📞</span><span>'+d.phone+'</span></div>';
+  if(d.email) info+='<div class="c-info-row"><span class="ic">✉</span><span>'+d.email+'</span></div>';
+  if(d.web)   info+='<div class="c-info-row"><span class="ic">🌐</span><span>'+d.web+'</span></div>';
 
-    let cardInner = '';
-    if (layout==='classic') {
-      cardInner=`<div class="card-top"><div><div class="card-name">${d.name}</div><div class="card-title">${d.title||''}</div><div class="card-company">${d.company||''}</div></div>${avatarHtml(50)}</div><div><div class="card-divider"></div><div class="card-info">${infoRows()}</div></div><div class="card-sns-row">${snsIcons()}</div>`;
-    } else if (layout==='split') {
-      cardInner=`<div class="card-left">${avatarHtml(62)}<div class="card-name">${d.name}</div><div class="card-title">${d.title||''}</div></div><div class="card-right"><div><div class="card-company">${d.company||''}</div><div class="card-divider"></div><div class="card-info">${infoRows()}</div></div><div class="card-sns-row">${snsIcons()}</div></div>`;
-    } else if (layout==='minimal') {
-      cardInner=`<div class="card-name">${d.name}</div><div class="card-title">${[d.title,d.company].filter(Boolean).join(' · ')}</div><div class="card-bio">${d.bio||''}</div><div class="card-bottom"><div class="card-info">${infoRows()}</div><div class="card-sns-row">${snsIcons()}</div></div>`;
-    } else if (layout==='bold') {
-      cardInner=`<div class="card-top-accent"></div><div class="card-name">${d.name}</div><div class="card-company">${[d.title,d.company].filter(Boolean).join(' · ')}</div><div class="card-divider"></div><div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="card-info">${infoRows()}</div><div class="card-sns-row">${snsIcons()}</div></div>`;
-    }
+  /* sns icons on card */
+  var icons=(d.sns||[]).filter(function(s){return s.h;}).map(function(s){
+    var e=(SNS_META[s.p]||{e:'◈'}).e;
+    return'<div class="c-sns-ic">'+e+'</div>';
+  }).join('');
 
-    // ── 연락처 버튼 ──
-    const contactBtns = [
-      d.phone && `<a class="contact-btn" href="tel:${d.phone}"><div class="contact-icon">📞</div><div><div class="contact-label">전화</div><div class="contact-value">${d.phone}</div></div></a>`,
-      d.email && `<a class="contact-btn" href="mailto:${d.email}"><div class="contact-icon">✉️</div><div><div class="contact-label">이메일</div><div class="contact-value">${d.email}</div></div></a>`,
-      d.web   && `<a class="contact-btn" href="${d.web.startsWith('http')?d.web:'https://'+d.web}" target="_blank"><div class="contact-icon">🌐</div><div><div class="contact-label">웹사이트</div><div class="contact-value">${d.web}</div></div></a>`,
-    ].filter(Boolean).join('');
-
-    // ── SNS 버튼 ──
-    const snsBtns = (d.sns||[]).filter(s=>s.handle).map(s=>{
-      const m = SNS_META[s.platform]||{label:s.platform,icon:'🔗'};
-      const href = s.handle.startsWith('http') ? s.handle : '#';
-      return `<a class="sns-btn" href="${href}" target="_blank">${m.icon} ${m.label}<span style="color:rgba(255,255,255,.35);margin-left:4px">${s.handle}</span></a>`;
-    }).join('');
-
-    // ── 서비스 카드 ──
-    const svcCards = (d.services||[]).filter(s=>s.title||s.desc).map(s=>
-      `<div class="service-card"><div class="s-title">${s.title||''}</div>${s.desc?`<div class="s-desc">${s.desc}</div>`:''}</div>`
-    ).join('');
-
-    app.innerHTML = `
-      <div class="card-section">
-        <div class="biz-card theme-${theme} layout-${layout}">
-          <div class="card-content">${cardInner}</div>
-        </div>
-        ${d.bio ? `<p style="font-size:.85rem;color:rgba(255,255,255,.5);text-align:center;max-width:340px;line-height:1.6">${d.bio}</p>` : ''}
-      </div>
-
-      ${contactBtns ? `<div class="contact-section">${contactBtns}</div>` : ''}
-      ${snsBtns     ? `<div class="sns-section"><div class="section-label">SNS</div><div class="sns-grid">${snsBtns}</div></div>` : ''}
-      ${svcCards    ? `<div class="services-section"><div class="section-label">서비스 소개</div>${svcCards}</div>` : ''}
-
-      <div class="bottom-section">
-        <div class="share-row">
-          <button class="btn btn-kakao" onclick="shareKakao()">
-            <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.86 1.5 1.5 4.14 1.5 7.38c0 2.07 1.29 3.9 3.24 4.98l-.78 2.91c-.06.21.18.39.36.27l3.39-2.22c.42.06.84.09 1.29.09 4.14 0 7.5-2.64 7.5-5.88S13.14 1.5 9 1.5z" fill="#3C1E1E"/></svg>
-            카카오톡 공유
-          </button>
-          <button class="btn btn-copy" onclick="copyLink()">🔗 링크 복사</button>
-        </div>
-        <a class="btn-make" href="index.html">🪪 나도 명함 만들기</a>
-      </div>
-    `;
+  /* card HTML */
+  var cardHTML='';
+  if(l==='classic'){
+    cardHTML='<div class="c-top"><div><div class="c-name">'+d.name+'</div>'+(d.title?'<div class="c-title">'+d.title+'</div>':'')+(d.company?'<div class="c-company">'+d.company+'</div>':'')+' </div>'+av+'</div><div class="c-divider"></div><div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="c-info">'+info+'</div><div class="c-sns">'+icons+'</div></div>';
+  } else if(l==='split'){
+    cardHTML='<div class="c-left">'+av+'<div class="c-name" style="font-size:.9rem;text-align:center">'+d.name+'</div>'+(d.title?'<div class="c-title" style="font-size:.58rem;text-align:center;margin-top:2px">'+d.title+'</div>':'')+' </div><div class="c-right"><div>'+(d.company?'<div class="c-company" style="font-size:.7rem;margin-bottom:6px">'+d.company+'</div>':'')+' <div class="c-divider"></div><div class="c-info">'+info+'</div></div><div class="c-sns">'+icons+'</div></div>';
+  } else if(l==='minimal'){
+    var sub=[d.title,d.company].filter(Boolean).join('  ·  ');
+    cardHTML='<div><div class="c-name" style="font-size:1.55rem;letter-spacing:.06em">'+d.name+'</div>'+(sub?'<div class="c-title" style="margin-top:5px">'+sub+'</div>':'')+' </div>'+(d.bio?'<div class="c-bio">'+d.bio+'</div>':'')+' <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="c-info">'+info+'</div><div class="c-sns">'+icons+'</div></div>';
+  } else if(l==='bold'){
+    var sub2=[d.title,d.company].filter(Boolean).join('  ·  ');
+    cardHTML='<div class="c-corner"></div><div class="c-name" style="font-size:1.6rem;font-weight:700;letter-spacing:.06em;line-height:1.1">'+d.name+'</div>'+(sub2?'<div class="c-subtitle">'+sub2+'</div>':'')+' <div class="c-divider" style="width:80px"></div><div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="c-info">'+info+'</div>'+av+'</div>';
   }
 
-  function copyLink() {
-    navigator.clipboard.writeText(location.href)
-      .then(()=>showToast('링크 복사 완료! 카카오톡에 붙여넣기 하세요 🔗'))
-      .catch(()=>{
-        const el=document.createElement('textarea');
-        el.value=location.href; el.style.position='fixed'; el.style.opacity='0';
-        document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el);
-        showToast('링크 복사 완료! 🔗');
-      });
-  }
+  var innerClass='card-inner'+(l==='split'?' split':l==='minimal'?' minimal':l==='bold'?' bold':'');
 
-  function shareKakao() {
-    if (navigator.share) {
-      navigator.share({ title: document.title, url: location.href })
-        .catch(() => copyLink());
-    } else {
-      copyLink();
-      showToast('링크 복사 완료! 카카오톡 채팅창에 붙여넣기 하세요 💬');
-    }
-  }
+  /* contact buttons */
+  var contacts='';
+  if(d.phone) contacts+='<a class="contact-btn" href="tel:'+d.phone+'"><div class="c-icon">📞</div><div><div class="c-label">전화</div><div class="c-val">'+d.phone+'</div></div></a>';
+  if(d.email) contacts+='<a class="contact-btn" href="mailto:'+d.email+'"><div class="c-icon">✉️</div><div><div class="c-label">이메일</div><div class="c-val">'+d.email+'</div></div></a>';
+  if(d.web){var href=d.web.startsWith('http')?d.web:'https://'+d.web;contacts+='<a class="contact-btn" href="'+href+'" target="_blank"><div class="c-icon">🌐</div><div><div class="c-label">웹사이트</div><div class="c-val">'+d.web+'</div></div></a>';}
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'), 3000);
-  }
+  /* sns buttons */
+  var snsBtns=(d.sns||[]).filter(function(s){return s.h;}).map(function(s){
+    var m=SNS_META[s.p]||{l:s.p,e:'🔗'};
+    var href=s.h.startsWith('http')?s.h:'#';
+    return'<a class="sns-btn" href="'+href+'" target="_blank">'+m.e+' '+m.l+' <span style="color:rgba(255,255,255,.28);margin-left:2px">'+s.h+'</span></a>';
+  }).join('');
+
+  /* service cards */
+  var svcs=(d.svc||[]).filter(function(s){return s.t||s.d;}).map(function(s){
+    return'<div class="svc-card"><div class="svc-title">'+s.t+'</div>'+(s.d?'<div class="svc-desc">'+s.d+'</div>':'')+' </div>';
+  }).join('');
+
+  app.innerHTML=
+    '<div class="card-section">'+
+      '<div class="biz-card t-'+t+'"><div class="'+innerClass+'">'+cardHTML+'</div></div>'+
+      (d.bio?'<div class="gold-line"></div><p class="card-bio">'+d.bio+'</p>':'') +
+    '</div>'+
+    (contacts?'<div class="section"><div class="sec-label">연락처</div><div class="contact-list">'+contacts+'</div></div>':'')+
+    (snsBtns?'<div class="section"><div class="sec-label">SNS</div><div class="sns-grid">'+snsBtns+'</div></div>':'')+
+    (svcs?'<div class="section"><div class="sec-label">서비스 소개</div><div class="svc-list">'+svcs+'</div></div>':'')+
+    '<div class="bottom">'+
+      '<div class="share-row">'+
+        '<button class="btn btn-kakao" onclick="shareKakao()">'+
+          '<svg width="15" height="15" viewBox="0 0 18 18"><path d="M9 1.5C4.86 1.5 1.5 4.14 1.5 7.38c0 2.07 1.29 3.9 3.24 4.98l-.78 2.91c-.06.21.18.39.36.27l3.39-2.22c.42.06.84.09 1.29.09 4.14 0 7.5-2.64 7.5-5.88S13.14 1.5 9 1.5z" fill="#3C1E1E"/></svg>'+
+          ' 카카오톡 공유'+
+        '</button>'+
+        '<button class="btn btn-copy" onclick="copyLink()">🔗 링크 복사</button>'+
+      '</div>'+
+      '<a class="btn-make" href="index.html">🪪 나도 명함 만들기</a>'+
+    '</div>';
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(location.href)
+    .then(function(){showToast('링크가 복사됐습니다 · 카카오톡에 붙여넣기 하세요');})
+    .catch(function(){
+      var el=document.createElement('textarea');el.value=location.href;
+      el.style.cssText='position:fixed;opacity:0';document.body.appendChild(el);
+      el.select();document.execCommand('copy');document.body.removeChild(el);
+      showToast('링크가 복사됐습니다');
+    });
+}
+function shareKakao(){
+  if(navigator.share){
+    navigator.share({title:document.title,url:location.href}).catch(function(){copyLink();});
+  } else { copyLink(); }
+}
+function showToast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');
+  setTimeout(function(){t.classList.remove('on');},3000);
+}
 </script>
 </body>
 </html>

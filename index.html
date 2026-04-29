@@ -4,143 +4,211 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>디지털 명함 메이커</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0f0f13;--sur:#1a1a22;--sur2:#22222e;--bdr:#2e2e3e;
-  --ac:#7c5cfc;--ac2:#c084fc;--tx:#f0f0f8;--mu:#8888a8;
+  --bg:#09090f;--sur:#111118;--sur2:#18181f;--bdr:#252530;
+  --ac:#c9a84c;--ac2:#e8c96a;--tx:#f0ede8;--mu:#6b6b80;
+  --gold:#c9a84c;--gold2:#e8c96a;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
 
-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--sur);border-bottom:1px solid var(--bdr)}
-.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1rem}
-.logo-mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center}
-.btn-reset{background:none;border:1px solid var(--bdr);color:var(--mu);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.8rem;transition:all .2s}
-.btn-reset:hover{border-color:var(--ac);color:var(--tx)}
+/* ── Header ── */
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--sur);border-bottom:1px solid var(--bdr)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:500;font-size:.95rem;letter-spacing:.04em;color:#c9c9d8}
+.logo-mark{width:30px;height:30px;border-radius:6px;background:linear-gradient(135deg,#8b6914,var(--gold));display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.btn-reset{background:none;border:1px solid var(--bdr);color:var(--mu);padding:5px 14px;border-radius:20px;cursor:pointer;font-size:.75rem;letter-spacing:.04em;transition:all .2s;font-family:inherit}
+.btn-reset:hover{border-color:var(--gold);color:var(--gold)}
 
+/* ── Layout ── */
 .wrap{display:flex;height:calc(100vh - 53px)}
 
-.side{width:340px;min-width:280px;overflow-y:auto;background:var(--sur);border-right:1px solid var(--bdr);padding:18px 16px;display:flex;flex-direction:column;gap:16px}
-.sec-title{font-size:.7rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-.fields{display:flex;flex-direction:column;gap:8px}
-label{display:block;font-size:.75rem;color:var(--mu);margin-bottom:3px}
-input,textarea,select{width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;color:var(--tx);padding:8px 10px;font-size:.85rem;outline:none;font-family:inherit;transition:border-color .15s}
-input:focus,textarea:focus,select:focus{border-color:var(--ac)}
-textarea{resize:vertical;min-height:52px}
+/* ── Sidebar ── */
+.side{width:340px;min-width:280px;overflow-y:auto;background:var(--sur);border-right:1px solid var(--bdr);padding:20px 18px;display:flex;flex-direction:column;gap:18px}
+.side::-webkit-scrollbar{width:3px}
+.side::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
 
-.photo-row{display:flex;align-items:center;gap:12px}
-.photo-circle{width:64px;height:64px;border-radius:50%;border:2px dashed var(--bdr);background:var(--sur2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;overflow:hidden;cursor:pointer;flex-shrink:0;transition:border-color .2s}
-.photo-circle:hover{border-color:var(--ac)}
+.sec-title{font-size:.65rem;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.14em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+.fields{display:flex;flex-direction:column;gap:8px}
+label{display:block;font-size:.72rem;color:var(--mu);margin-bottom:3px;letter-spacing:.03em}
+input,textarea,select{width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:7px;color:var(--tx);padding:8px 11px;font-size:.83rem;outline:none;font-family:inherit;transition:border-color .2s;line-height:1.5}
+input:focus,textarea:focus,select:focus{border-color:var(--gold)}
+textarea{resize:vertical;min-height:50px}
+select option{background:#1a1a22}
+
+/* ── Photo ── */
+.photo-row{display:flex;align-items:center;gap:14px}
+.photo-circle{width:62px;height:62px;border-radius:50%;border:1px solid var(--bdr);background:var(--sur2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;overflow:hidden;cursor:pointer;flex-shrink:0;transition:border-color .2s}
+.photo-circle:hover{border-color:var(--gold)}
 .photo-circle img{width:100%;height:100%;object-fit:cover}
 .photo-btns{display:flex;flex-direction:column;gap:5px}
-.btn-sm{padding:6px 10px;border-radius:7px;background:var(--sur2);border:1px solid var(--bdr);color:var(--tx);font-size:.78rem;cursor:pointer;transition:border-color .2s;text-align:center;display:block}
-.btn-sm:hover{border-color:var(--ac)}
-.photo-note{font-size:.68rem;color:var(--mu)}
+.btn-sm{padding:5px 10px;border-radius:6px;background:var(--sur2);border:1px solid var(--bdr);color:var(--tx);font-size:.75rem;cursor:pointer;transition:border-color .2s;text-align:center;display:block;font-family:inherit}
+.btn-sm:hover{border-color:var(--gold)}
+.photo-note{font-size:.65rem;color:var(--mu)}
 
-.theme-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.th{height:32px;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:all .15s}
-.th:hover{transform:scale(1.07)}
-.th.on{border-color:#fff}
+/* ── Themes ── */
+.theme-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.th{height:34px;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:all .18s;position:relative}
+.th:hover{transform:scale(1.06)}
+.th.on{border-color:var(--gold);box-shadow:0 0 0 1px rgba(201,168,76,.3)}
+.th-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:.55rem;color:var(--mu);white-space:nowrap;opacity:0;transition:opacity .2s}
+.th:hover .th-label{opacity:1}
 
-.layout-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.lb{padding:8px 4px;border-radius:8px;background:var(--sur2);border:2px solid var(--bdr);color:var(--mu);font-size:.75rem;cursor:pointer;text-align:center;transition:all .2s}
-.lb:hover{border-color:var(--ac);color:var(--tx)}
-.lb.on{border-color:var(--ac);color:var(--tx);background:#2a1f5e}
-.lb .li{font-size:1.1rem;display:block;margin-bottom:3px}
+/* ── Layout btns ── */
+.layout-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.lb{padding:9px 4px;border-radius:8px;background:var(--sur2);border:1px solid var(--bdr);color:var(--mu);font-size:.72rem;cursor:pointer;text-align:center;transition:all .2s;font-family:inherit}
+.lb:hover{border-color:var(--gold);color:var(--tx)}
+.lb.on{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06)}
+.lb .li{font-size:1rem;display:block;margin-bottom:3px}
 
+/* ── SNS / SVC rows ── */
 .row-wrap{display:flex;gap:6px;align-items:center;margin-bottom:6px}
 .row-wrap select{width:100px;flex-shrink:0}
 .row-wrap input{flex:1}
-.btn-x{background:none;border:1px solid var(--bdr);color:var(--mu);width:30px;height:30px;border-radius:6px;cursor:pointer;flex-shrink:0;font-size:.8rem}
-.btn-x:hover{border-color:#e74c3c;color:#e74c3c}
-.btn-add{width:100%;padding:7px;border-radius:7px;background:none;border:1px dashed var(--bdr);color:var(--mu);cursor:pointer;font-size:.8rem;transition:all .2s;margin-top:4px}
-.btn-add:hover{border-color:var(--ac);color:var(--ac)}
+.btn-x{background:none;border:1px solid var(--bdr);color:var(--mu);width:30px;height:30px;border-radius:6px;cursor:pointer;flex-shrink:0;font-size:.8rem;font-family:inherit;transition:all .2s}
+.btn-x:hover{border-color:#c0392b;color:#c0392b}
+.btn-add{width:100%;padding:7px;border-radius:7px;background:none;border:1px dashed var(--bdr);color:var(--mu);cursor:pointer;font-size:.78rem;transition:all .2s;margin-top:4px;font-family:inherit}
+.btn-add:hover{border-color:var(--gold);color:var(--gold)}
+.svc-box{background:var(--sur2);border:1px solid var(--bdr);border-radius:9px;padding:11px;display:flex;flex-direction:column;gap:7px;position:relative;margin-bottom:8px}
 
-.svc-box{background:var(--sur2);border:1px solid var(--bdr);border-radius:9px;padding:10px;display:flex;flex-direction:column;gap:6px;position:relative;margin-bottom:8px}
-
-.share-box{background:var(--sur2);border:1px solid var(--bdr);border-radius:9px;padding:10px 12px}
-.sh-name{font-size:.82rem;font-weight:600}
-.sh-url{font-size:.68rem;color:var(--ac2);word-break:break-all;margin-top:4px}
+/* ── Share ── */
+.share-box{background:var(--sur2);border:1px solid var(--bdr);border-radius:9px;padding:12px 14px}
+.sh-name{font-size:.8rem;font-weight:500;color:var(--tx)}
+.sh-url{font-size:.65rem;color:var(--gold);word-break:break-all;margin-top:5px;opacity:.75}
 .btns{display:flex;flex-direction:column;gap:7px;margin-top:10px}
-.btn{width:100%;padding:11px;border-radius:10px;border:none;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn{width:100%;padding:11px;border-radius:9px;border:none;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;font-family:inherit;letter-spacing:.02em}
 .btn-kakao{background:#FEE500;color:#3C1E1E}
-.btn-kakao:hover{filter:brightness(1.05)}
-.btn-pri{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
-.btn-pri:hover{opacity:.9}
-.btn-sec{background:var(--sur2);border:1px solid var(--bdr);color:var(--tx)}
-.btn-sec:hover{border-color:var(--ac)}
+.btn-kakao:hover{filter:brightness(1.07)}
+.btn-gold{background:linear-gradient(135deg,#8b6914,var(--gold),#e8c96a);color:#1a1200;font-weight:700}
+.btn-gold:hover{opacity:.9;transform:translateY(-1px)}
+.btn-sec{background:var(--sur2);border:1px solid var(--bdr);color:var(--mu)}
+.btn-sec:hover{border-color:var(--gold);color:var(--tx)}
 
-.preview{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:30px 20px;overflow-y:auto;background:radial-gradient(ellipse at 50% 40%,#1a1030,var(--bg) 70%)}
-.prev-label{font-size:.7rem;color:var(--mu);letter-spacing:.1em;text-transform:uppercase}
+/* ── Preview ── */
+.preview{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px 20px;overflow-y:auto;background:radial-gradient(ellipse at 50% 35%,#1a1408 0%,var(--bg) 65%)}
+.prev-label{font-size:.65rem;color:var(--mu);letter-spacing:.16em;text-transform:uppercase}
 
-.card-scene{perspective:1000px}
-.card-flip{width:380px;height:215px;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);cursor:pointer}
+/* ── Business Card ── */
+.card-scene{perspective:1200px}
+.card-flip{width:400px;height:240px;position:relative;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1);cursor:pointer}
 .card-flip.flipped{transform:rotateY(180deg)}
-.card-face{position:absolute;inset:0;border-radius:15px;overflow:hidden;backface-visibility:hidden;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.card-face{position:absolute;inset:0;border-radius:12px;overflow:hidden;backface-visibility:hidden;box-shadow:0 32px 80px rgba(0,0,0,.7),0 2px 0 rgba(255,255,255,.04) inset}
 .card-back-face{transform:rotateY(180deg)}
 
-.t-purple{background:linear-gradient(135deg,#1e1240,#3b1fa8,#6d28d9)}
-.t-ocean {background:linear-gradient(135deg,#0f2027,#203a43,#2c5364)}
-.t-rose  {background:linear-gradient(135deg,#3d0d1e,#8b1a4a,#d62976)}
-.t-forest{background:linear-gradient(135deg,#0d1f0f,#1a4a28,#27ae60)}
-.t-dark  {background:linear-gradient(135deg,#111,#2c2c2c)}
-.t-gold  {background:linear-gradient(135deg,#1a1200,#5c3d00,#c9960c)}
-.t-sky   {background:linear-gradient(135deg,#0a1628,#1a4a8a,#3498db)}
-.t-white {background:linear-gradient(135deg,#f0f0f0,#ddd)}
+/* ─── Premium Themes ─── */
+/* 네이비 골드 */
+.t-navy{background:linear-gradient(145deg,#04111f 0%,#0a1e35 40%,#0f2847 100%)}
+/* 차콜 골드 */
+.t-charcoal{background:linear-gradient(145deg,#0d0d0d 0%,#1a1a1a 50%,#242424 100%)}
+/* 버건디 */
+.t-burgundy{background:linear-gradient(145deg,#1a0408 0%,#3d0c18 50%,#5c1226 100%)}
+/* 딥 그린 */
+.t-green{background:linear-gradient(145deg,#030e07 0%,#0a2614 50%,#0f3a1e 100%)}
+/* 아이보리 */
+.t-ivory{background:linear-gradient(145deg,#f5f0e8 0%,#ede5d0 100%)}
+/* 로즈골드 */
+.t-rose{background:linear-gradient(145deg,#1a0a0e 0%,#3d1520 50%,#5c2030 100%)}
+/* 미드나잇 블루 */
+.t-midnight{background:linear-gradient(145deg,#04080f 0%,#080f1e 50%,#0c1628 100%)}
+/* 딥 퍼플 */
+.t-purple{background:linear-gradient(145deg,#0d0418 0%,#1a0835 50%,#28105a 100%)}
 
-.card-inner{position:relative;z-index:1;padding:20px 22px;height:100%;display:flex;flex-direction:column;justify-content:space-between}
-.c-top{display:flex;justify-content:space-between;align-items:flex-start}
-.c-name{font-size:1.25rem;font-weight:700;color:#fff;line-height:1.2}
-.c-title{font-size:.73rem;color:rgba(255,255,255,.65);margin-top:2px}
-.c-company{font-size:.7rem;color:rgba(255,255,255,.45);margin-top:1px}
-.c-divider{height:1px;background:rgba(255,255,255,.15);margin:8px 0}
-.c-info{display:flex;flex-direction:column;gap:3px}
-.c-info-row{display:flex;align-items:center;gap:5px}
-.c-info-row .ic{font-size:.7rem;opacity:.5;width:13px}
-.c-info-row span{font-size:.7rem;color:rgba(255,255,255,.75)}
-.c-sns{display:flex;gap:5px}
-.c-sns-ic{width:22px;height:22px;border-radius:5px;background:rgba(255,255,255,.13);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#fff}
-.c-avatar{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
+/* Gold shimmer overlay on all dark cards */
+.card-face:not(.t-ivory)::before{
+  content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(110deg,transparent 20%,rgba(201,168,76,.045) 50%,transparent 80%);
+}
+/* Subtle noise texture */
+.card-face::after{
+  content:'';position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ─── Card Content ─── */
+.card-inner{position:relative;z-index:4;padding:26px 28px;height:100%;display:flex;flex-direction:column;justify-content:space-between}
+
+/* Name & identity */
+.c-name{font-family:'Noto Serif KR','Noto Sans KR',serif;font-size:1.35rem;font-weight:700;color:#fff;letter-spacing:.04em;line-height:1.2}
+.c-name-latin{font-family:'Georgia','Times New Roman',serif;font-size:1.4rem;font-weight:400;letter-spacing:.08em}
+.c-title{font-size:.68rem;color:rgba(255,255,255,.55);letter-spacing:.14em;margin-top:4px;text-transform:uppercase}
+.c-company{font-size:.72rem;color:rgba(255,255,255,.35);letter-spacing:.06em;margin-top:2px}
+
+/* Gold divider */
+.c-divider{height:1px;background:linear-gradient(90deg,rgba(201,168,76,.6),rgba(201,168,76,.15),transparent);margin:10px 0}
+
+/* Contact info */
+.c-info{display:flex;flex-direction:column;gap:4px}
+.c-info-row{display:flex;align-items:center;gap:7px}
+.c-info-row .ic{font-size:.68rem;opacity:.4;width:13px;flex-shrink:0}
+.c-info-row span{font-size:.68rem;color:rgba(255,255,255,.65);letter-spacing:.02em}
+
+/* Avatar */
+.c-avatar{width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:600;color:rgba(255,255,255,.9);overflow:hidden;flex-shrink:0;font-family:'Noto Serif KR',serif}
 .c-avatar img{width:100%;height:100%;object-fit:cover}
 
-.t-white .c-name,.t-white .c-title,.t-white .c-company{color:#222}
-.t-white .c-info-row span{color:#444}
-.t-white .c-divider{background:rgba(0,0,0,.15)}
-.t-white .c-sns-ic{background:rgba(0,0,0,.08);color:#333}
+/* SNS icons */
+.c-sns{display:flex;gap:5px}
+.c-sns-ic{width:22px;height:22px;border-radius:4px;border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-size:.63rem;color:rgba(255,255,255,.65)}
 
+/* Top row */
+.c-top{display:flex;justify-content:space-between;align-items:flex-start}
+.c-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+
+/* Ivory overrides */
+.t-ivory .c-name{color:#1a1408}
+.t-ivory .c-title{color:rgba(26,20,8,.45)}
+.t-ivory .c-company{color:rgba(26,20,8,.35)}
+.t-ivory .c-info-row span{color:rgba(26,20,8,.6)}
+.t-ivory .c-info-row .ic{color:rgba(26,20,8,.4)}
+.t-ivory .c-divider{background:linear-gradient(90deg,rgba(139,105,20,.5),rgba(139,105,20,.15),transparent)}
+.t-ivory .c-avatar{border-color:rgba(139,105,20,.4);color:#3d2f08}
+.t-ivory .c-sns-ic{border-color:rgba(139,105,20,.3);color:rgba(26,20,8,.6)}
+
+/* Split layout */
 .card-inner.split{flex-direction:row;padding:0}
-.split .c-left{width:120px;height:100%;background:rgba(0,0,0,.22);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:16px 10px}
-.split .c-left .c-avatar{width:56px;height:56px;font-size:1.4rem}
-.split .c-left .c-name{font-size:.88rem;text-align:center}
-.split .c-left .c-title{font-size:.63rem;text-align:center;color:rgba(255,255,255,.55)}
-.split .c-right{flex:1;padding:16px 14px;display:flex;flex-direction:column;justify-content:space-between}
+.split .c-left{width:128px;height:100%;background:rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px 12px;border-right:1px solid rgba(201,168,76,.12)}
+.split .c-left .c-avatar{width:56px;height:56px;font-size:1.3rem}
+.split .c-left .c-name{font-size:.95rem;text-align:center;letter-spacing:.04em}
+.split .c-left .c-title{font-size:.6rem;text-align:center;letter-spacing:.1em}
+.split .c-right{flex:1;padding:20px 18px;display:flex;flex-direction:column;justify-content:space-between}
 
-.card-inner.minimal{justify-content:center;gap:6px}
-.minimal .c-name{font-size:1.45rem}
-.minimal .c-bio{font-size:.7rem;color:rgba(255,255,255,.45);line-height:1.5;max-width:240px}
-.minimal .c-bottom{display:flex;justify-content:space-between;align-items:flex-end;margin-top:auto}
+/* Minimal layout */
+.card-inner.minimal{justify-content:center;gap:7px}
+.minimal .c-name{font-size:1.6rem;letter-spacing:.06em}
+.minimal .c-bio{font-size:.68rem;color:rgba(255,255,255,.38);line-height:1.65;max-width:260px;letter-spacing:.02em}
+.minimal .c-bottom-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:auto}
 
+/* Bold layout */
 .card-inner.bold{justify-content:flex-end}
-.bold .c-accent{position:absolute;top:0;right:0;width:140px;height:140px;background:rgba(255,255,255,.07);border-radius:0 15px 0 100%}
-.bold .c-name{font-size:1.55rem;font-weight:800;line-height:1.1}
-.bold .c-company-line{font-size:.82rem;color:rgba(255,255,255,.55);margin:3px 0 10px}
+.bold .c-corner{position:absolute;top:0;right:0;width:100px;height:100px;border-bottom:1px solid rgba(201,168,76,.15);border-left:1px solid rgba(201,168,76,.15);border-radius:0 12px 0 80%}
+.bold .c-name{font-size:1.65rem;font-weight:700;letter-spacing:.06em;line-height:1.1}
+.bold .c-subtitle{font-size:.72rem;color:rgba(255,255,255,.45);letter-spacing:.14em;margin:5px 0 12px;text-transform:uppercase}
 
-.card-back-inner{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px}
-.qr-box{width:80px;height:80px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.58rem;color:#333;text-align:center;padding:6px;line-height:1.4}
-.back-bio{font-size:.7rem;color:rgba(255,255,255,.5);text-align:center;max-width:240px;line-height:1.5}
-.back-url{font-size:.67rem;color:rgba(255,255,255,.3)}
+/* Card back */
+.card-back-inner{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;position:relative;z-index:4}
+.back-logo{font-size:.65rem;letter-spacing:.22em;color:rgba(255,255,255,.2);text-transform:uppercase;margin-bottom:4px}
+.qr-box{width:78px;height:78px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#555;text-align:center;padding:5px;line-height:1.5}
+.back-bio{font-size:.68rem;color:rgba(255,255,255,.4);text-align:center;max-width:220px;line-height:1.7;letter-spacing:.03em}
+.back-url{font-size:.62rem;color:rgba(201,168,76,.5);letter-spacing:.08em}
+.back-divider{width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent)}
 
-.flip-hint{font-size:.72rem;color:var(--mu);cursor:pointer;transition:color .2s}
-.flip-hint:hover{color:var(--ac2)}
+/* Flip hint */
+.flip-hint{font-size:.68rem;color:var(--mu);cursor:pointer;letter-spacing:.05em;transition:color .2s}
+.flip-hint:hover{color:var(--gold)}
 
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ac);color:#fff;padding:9px 20px;border-radius:24px;font-size:.83rem;font-weight:700;opacity:0;pointer-events:none;transition:opacity .25s;z-index:999;white-space:nowrap}
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1408;border:1px solid var(--gold);color:var(--gold);padding:9px 22px;border-radius:24px;font-size:.8rem;font-weight:500;opacity:0;pointer-events:none;transition:opacity .25s;z-index:999;white-space:nowrap;letter-spacing:.04em}
 .toast.on{opacity:1}
 
 @media(max-width:820px){
   .wrap{flex-direction:column;height:auto}
   .side{width:100%;border-right:none;border-bottom:1px solid var(--bdr)}
-  .card-flip{width:320px;height:182px}
+  .card-flip{width:330px;height:198px}
   .preview{min-height:380px}
 }
 </style>
@@ -152,148 +220,161 @@ textarea{resize:vertical;min-height:52px}
     <div class="logo-mark">🪪</div>
     디지털 명함 메이커
   </div>
-  <button class="btn-reset" onclick="doReset()">✨ 새로 만들기</button>
+  <button class="btn-reset" onclick="doReset()">새로 만들기</button>
 </header>
 
 <div class="wrap">
   <aside class="side">
 
+    <!-- 프로필 사진 -->
     <div>
       <div class="sec-title">프로필 사진</div>
       <div class="photo-row">
         <div class="photo-circle" id="photoCircle" onclick="document.getElementById('photoFile').click()">📷</div>
         <div class="photo-btns">
-          <label class="btn-sm" onclick="document.getElementById('photoFile').click()">📁 사진 선택</label>
-          <button class="btn-sm" id="btnRemovePhoto" style="display:none" onclick="removePhoto()">✕ 제거</button>
+          <label class="btn-sm" onclick="document.getElementById('photoFile').click()">사진 선택</label>
+          <button class="btn-sm" id="btnRemovePhoto" style="display:none" onclick="removePhoto()">제거</button>
           <div class="photo-note">JPG · PNG · 자동 압축</div>
         </div>
       </div>
       <input type="file" id="photoFile" accept="image/*" onchange="handlePhoto(this)" style="display:none">
     </div>
 
+    <!-- 기본 정보 -->
     <div>
       <div class="sec-title">기본 정보</div>
       <div class="fields">
-        <div><label>이름 *</label><input id="fName" placeholder="홍길동" oninput="renderCard()"></div>
-        <div><label>직함</label><input id="fTitle" placeholder="CEO · 대표이사" oninput="renderCard()"></div>
+        <div><label>이름</label><input id="fName" placeholder="홍 길 동" oninput="renderCard()"></div>
+        <div><label>직함 / 포지션</label><input id="fTitle" placeholder="CHIEF EXECUTIVE OFFICER" oninput="renderCard()"></div>
         <div><label>회사 / 브랜드</label><input id="fCompany" placeholder="회사명" oninput="renderCard()"></div>
-        <div><label>한 줄 소개</label><textarea id="fBio" placeholder="나를 소개하는 한 줄" oninput="renderCard()"></textarea></div>
+        <div><label>소개 문구</label><textarea id="fBio" placeholder="한 줄 소개를 입력하세요" oninput="renderCard()"></textarea></div>
       </div>
     </div>
 
+    <!-- 연락처 -->
     <div>
       <div class="sec-title">연락처</div>
       <div class="fields">
         <div><label>전화번호</label><input id="fPhone" placeholder="010-0000-0000" oninput="renderCard()"></div>
-        <div><label>이메일</label><input id="fEmail" placeholder="me@example.com" oninput="renderCard()"></div>
-        <div><label>웹사이트</label><input id="fWeb" placeholder="www.example.com" oninput="renderCard()"></div>
+        <div><label>이메일</label><input id="fEmail" placeholder="name@company.com" oninput="renderCard()"></div>
+        <div><label>웹사이트</label><input id="fWeb" placeholder="www.company.com" oninput="renderCard()"></div>
       </div>
     </div>
 
+    <!-- SNS -->
     <div>
       <div class="sec-title">SNS</div>
       <div id="snsList"></div>
       <button class="btn-add" onclick="addSns()">＋ SNS 추가</button>
     </div>
 
+    <!-- 서비스 소개 -->
     <div>
       <div class="sec-title">서비스 소개</div>
       <div id="svcList"></div>
       <button class="btn-add" onclick="addSvc()">＋ 서비스 추가</button>
     </div>
 
+    <!-- 테마 -->
     <div>
-      <div class="sec-title">테마 색상</div>
-      <div class="theme-row">
-        <div class="th on" data-t="purple" style="background:linear-gradient(135deg,#3b1fa8,#6d28d9)" onclick="setTheme('purple',this)"></div>
-        <div class="th" data-t="ocean"  style="background:linear-gradient(135deg,#203a43,#2c5364)" onclick="setTheme('ocean',this)"></div>
-        <div class="th" data-t="rose"   style="background:linear-gradient(135deg,#8b1a4a,#d62976)" onclick="setTheme('rose',this)"></div>
-        <div class="th" data-t="forest" style="background:linear-gradient(135deg,#1a4a28,#27ae60)" onclick="setTheme('forest',this)"></div>
-        <div class="th" data-t="dark"   style="background:linear-gradient(135deg,#111,#2c2c2c)"   onclick="setTheme('dark',this)"></div>
-        <div class="th" data-t="gold"   style="background:linear-gradient(135deg,#5c3d00,#c9960c)" onclick="setTheme('gold',this)"></div>
-        <div class="th" data-t="sky"    style="background:linear-gradient(135deg,#1a4a8a,#3498db)" onclick="setTheme('sky',this)"></div>
-        <div class="th" data-t="white"  style="background:linear-gradient(135deg,#eee,#ccc);border:1px solid #bbb" onclick="setTheme('white',this)"></div>
+      <div class="sec-title">테마</div>
+      <div class="theme-row" style="margin-bottom:18px">
+        <div class="th on" data-t="navy"     style="background:linear-gradient(145deg,#04111f,#0f2847)" onclick="setTheme('navy',this)"><span class="th-label">네이비</span></div>
+        <div class="th"    data-t="charcoal" style="background:linear-gradient(145deg,#0d0d0d,#242424)" onclick="setTheme('charcoal',this)"><span class="th-label">차콜</span></div>
+        <div class="th"    data-t="burgundy" style="background:linear-gradient(145deg,#1a0408,#5c1226)" onclick="setTheme('burgundy',this)"><span class="th-label">버건디</span></div>
+        <div class="th"    data-t="green"    style="background:linear-gradient(145deg,#030e07,#0f3a1e)" onclick="setTheme('green',this)"><span class="th-label">딥그린</span></div>
+        <div class="th"    data-t="ivory"    style="background:linear-gradient(145deg,#f5f0e8,#ede5d0);border:1px solid #ccc" onclick="setTheme('ivory',this)"><span class="th-label" style="color:#555">아이보리</span></div>
+        <div class="th"    data-t="rose"     style="background:linear-gradient(145deg,#1a0a0e,#5c2030)" onclick="setTheme('rose',this)"><span class="th-label">로즈</span></div>
+        <div class="th"    data-t="midnight" style="background:linear-gradient(145deg,#04080f,#0c1628)" onclick="setTheme('midnight',this)"><span class="th-label">미드나잇</span></div>
+        <div class="th"    data-t="purple"   style="background:linear-gradient(145deg,#0d0418,#28105a)" onclick="setTheme('purple',this)"><span class="th-label">퍼플</span></div>
       </div>
     </div>
 
+    <!-- 레이아웃 -->
     <div>
       <div class="sec-title">레이아웃</div>
       <div class="layout-row">
-        <button class="lb on" data-l="classic" onclick="setLayout('classic',this)"><span class="li">📋</span>클래식</button>
-        <button class="lb"    data-l="split"   onclick="setLayout('split',this)"><span class="li">⬛</span>스플릿</button>
-        <button class="lb"    data-l="minimal" onclick="setLayout('minimal',this)"><span class="li">◻️</span>미니멀</button>
-        <button class="lb"    data-l="bold"    onclick="setLayout('bold',this)"><span class="li">🅱️</span>볼드</button>
+        <button class="lb on" data-l="classic" onclick="setLayout('classic',this)"><span class="li">▤</span>클래식</button>
+        <button class="lb"    data-l="split"   onclick="setLayout('split',this)"><span class="li">▧</span>스플릿</button>
+        <button class="lb"    data-l="minimal" onclick="setLayout('minimal',this)"><span class="li">▭</span>미니멀</button>
+        <button class="lb"    data-l="bold"    onclick="setLayout('bold',this)"><span class="li">▰</span>볼드</button>
       </div>
     </div>
 
+    <!-- 공유 -->
     <div>
       <div class="sec-title">공유 / 저장</div>
       <div class="share-box">
         <div class="sh-name" id="shName">이름을 입력하면 공유 링크가 생성돼요</div>
-        <div class="sh-url" id="shUrl"></div>
+        <div class="sh-url"  id="shUrl"></div>
       </div>
       <div class="btns">
         <button class="btn btn-kakao" onclick="shareKakao()">
           <svg width="16" height="16" viewBox="0 0 18 18"><path d="M9 1.5C4.86 1.5 1.5 4.14 1.5 7.38c0 2.07 1.29 3.9 3.24 4.98l-.78 2.91c-.06.21.18.39.36.27l3.39-2.22c.42.06.84.09 1.29.09 4.14 0 7.5-2.64 7.5-5.88S13.14 1.5 9 1.5z" fill="#3C1E1E"/></svg>
           카카오톡으로 공유
         </button>
-        <button class="btn btn-pri" onclick="copyLink()">🔗 링크 복사</button>
-        <button class="btn btn-sec" onclick="saveImage()">⬇ 이미지 저장</button>
+        <button class="btn btn-gold"  onclick="copyLink()">링크 복사</button>
+        <button class="btn btn-sec"   onclick="saveImage()">이미지 저장</button>
       </div>
     </div>
 
   </aside>
 
+  <!-- Preview -->
   <main class="preview">
     <div class="prev-label">명함 미리보기</div>
     <div class="card-scene">
       <div class="card-flip" id="cardFlip" onclick="flipCard()">
-        <div class="card-face t-purple" id="cardFront">
+        <div class="card-face t-navy" id="cardFront">
           <div id="cardInner" class="card-inner"></div>
         </div>
-        <div class="card-face card-back-face t-purple" id="cardBack">
+        <div class="card-face card-back-face t-navy" id="cardBack">
           <div class="card-back-inner">
+            <div class="back-logo">Digital Business Card</div>
+            <div class="back-divider"></div>
             <div class="qr-box">QR 코드<br/>(공유 링크)</div>
             <div class="back-bio" id="backBio"></div>
+            <div class="back-divider"></div>
             <div class="back-url" id="backUrl"></div>
           </div>
         </div>
       </div>
     </div>
-    <div class="flip-hint" id="flipHint" onclick="flipCard()">🔄 클릭하면 뒷면을 볼 수 있어요</div>
+    <div class="flip-hint" id="flipHint" onclick="flipCard()">카드를 클릭하면 뒷면을 볼 수 있어요</div>
   </main>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-var theme = 'purple', layout = 'classic', photo = '', flipped = false;
-var snsList = [], svcList = [];
+var theme='navy', layout='classic', photo='', flipped=false;
+var snsList=[], svcList=[];
 
-var SNS = [
+var SNS=[
   {v:'threads',l:'Threads',e:'🧵'},{v:'instagram',l:'Instagram',e:'📸'},
   {v:'youtube',l:'YouTube',e:'▶️'},{v:'linkedin',l:'LinkedIn',e:'💼'},
-  {v:'twitter',l:'X',e:'✖️'},{v:'kakao',l:'카카오',e:'💬'},
-  {v:'naver',l:'네이버',e:'🟢'},{v:'tiktok',l:'TikTok',e:'🎵'},
+  {v:'twitter',l:'X / Twitter',e:'✖️'},{v:'kakao',l:'카카오',e:'💬'},
+  {v:'naver',l:'네이버 블로그',e:'🟢'},{v:'tiktok',l:'TikTok',e:'🎵'},
   {v:'github',l:'GitHub',e:'🐙'}
 ];
 
-window.onload = function(){ loadFromUrl(); renderSnsList(); renderSvcList(); renderCard(); };
+window.onload=function(){ loadFromUrl(); renderSnsList(); renderSvcList(); renderCard(); };
 
 function gv(id){ var e=document.getElementById(id); return e?e.value:''; }
 function ge(id){ return document.getElementById(id); }
-function ini(n){ return n?(n.length<=3?n.slice(0,2):n[0]):'?'; }
+function ini(n){ if(!n) return '?'; var s=n.trim(); return s.length<=3?s.slice(0,2):s[0]; }
 
+/* ── Photo ── */
 function handlePhoto(inp){
   if(!inp.files[0]) return;
   var r=new FileReader();
   r.onload=function(ev){
     var img=new Image();
     img.onload=function(){
-      var cv=document.createElement('canvas'); cv.width=cv.height=110;
+      var cv=document.createElement('canvas'); cv.width=cv.height=120;
       var cx=cv.getContext('2d'), s=Math.min(img.width,img.height);
-      cx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,110,110);
-      photo=cv.toDataURL('image/jpeg',.65);
+      cx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,120,120);
+      photo=cv.toDataURL('image/jpeg',.7);
       ge('photoCircle').innerHTML='<img src="'+photo+'">';
       ge('btnRemovePhoto').style.display='block';
       renderCard();
@@ -304,6 +385,7 @@ function handlePhoto(inp){
 }
 function removePhoto(){ photo=''; ge('photoCircle').innerHTML='📷'; ge('btnRemovePhoto').style.display='none'; renderCard(); }
 
+/* ── SNS ── */
 function addSns(){ snsList.push({p:'instagram',h:''}); renderSnsList(); }
 function delSns(i){ snsList.splice(i,1); renderSnsList(); renderCard(); }
 function renderSnsList(){
@@ -318,6 +400,7 @@ function renderSnsList(){
   });
 }
 
+/* ── Service ── */
 function addSvc(){ svcList.push({t:'',d:''}); renderSvcList(); }
 function delSvc(i){ svcList.splice(i,1); renderSvcList(); }
 function renderSvcList(){
@@ -325,12 +408,13 @@ function renderSvcList(){
   svcList.forEach(function(s,i){
     var d=document.createElement('div'); d.className='svc-box';
     d.innerHTML='<button class="btn-x" style="position:absolute;top:8px;right:8px" onclick="delSvc('+i+')">✕</button>'+
-      '<input placeholder="서비스 이름 (예: 1:1 코칭)" value="'+s.t+'" oninput="svcList['+i+'].t=this.value" style="padding-right:36px">'+
-      '<textarea placeholder="서비스 설명" style="min-height:48px" oninput="svcList['+i+'].d=this.value">'+s.d+'</textarea>';
+      '<input placeholder="서비스 이름" value="'+s.t+'" oninput="svcList['+i+'].t=this.value" style="padding-right:38px">'+
+      '<textarea placeholder="서비스 설명" style="min-height:46px" oninput="svcList['+i+'].d=this.value">'+s.d+'</textarea>';
     el.appendChild(d);
   });
 }
 
+/* ── Theme / Layout ── */
 function setTheme(t,el){
   theme=t;
   document.querySelectorAll('.th').forEach(function(b){b.classList.remove('on');});
@@ -346,24 +430,33 @@ function setLayout(l,el){
   renderCard();
 }
 
+/* ── Render ── */
+function gv(id){ var e=document.getElementById(id); return e?e.value:''; }
+
 function renderCard(){
-  var name=gv('fName')||'내 이름', title=gv('fTitle'), company=gv('fCompany');
-  var bio=gv('fBio'), phone=gv('fPhone'), email=gv('fEmail'), web=gv('fWeb');
+  var name=gv('fName')||'홍 길 동';
+  var title=gv('fTitle');
+  var company=gv('fCompany');
+  var bio=gv('fBio');
+  var phone=gv('fPhone');
+  var email=gv('fEmail');
+  var web=gv('fWeb');
 
   ge('backBio').textContent=bio;
   ge('backUrl').textContent=web;
 
+  var isIvory=(theme==='ivory');
   var av=photo
     ?'<div class="c-avatar"><img src="'+photo+'"></div>'
-    :'<div class="c-avatar">'+ini(name)+'</div>';
+    :'<div class="c-avatar" style="'+(isIvory?'border-color:rgba(139,105,20,.4);color:#3d2f08':'')+'">'+ini(name)+'</div>';
 
   var info='';
   if(phone) info+='<div class="c-info-row"><span class="ic">📞</span><span>'+phone+'</span></div>';
-  if(email) info+='<div class="c-info-row"><span class="ic">✉️</span><span>'+email+'</span></div>';
+  if(email) info+='<div class="c-info-row"><span class="ic">✉</span><span>'+email+'</span></div>';
   if(web)   info+='<div class="c-info-row"><span class="ic">🌐</span><span>'+web+'</span></div>';
 
   var icons=snsList.filter(function(s){return s.h;}).map(function(s){
-    var e=(SNS.find(function(o){return o.v===s.p;})||{e:'🔗'}).e;
+    var e=(SNS.find(function(o){return o.v===s.p;})||{e:'◈'}).e;
     return'<div class="c-sns-ic">'+e+'</div>';
   }).join('');
 
@@ -372,49 +465,71 @@ function renderCard(){
 
   if(layout==='classic'){
     inn.innerHTML=
-      '<div class="c-top"><div>'+
-        '<div class="c-name">'+name+'</div>'+
-        (title?'<div class="c-title">'+title+'</div>':'')+
-        (company?'<div class="c-company">'+company+'</div>':'')+
-      '</div>'+av+'</div>'+
-      '<div><div class="c-divider"></div><div class="c-info">'+info+'</div></div>'+
-      '<div class="c-sns">'+icons+'</div>';
+      '<div class="c-top">'+
+        '<div>'+
+          '<div class="c-name">'+name+'</div>'+
+          (title?'<div class="c-title">'+title+'</div>':'')+
+          (company?'<div class="c-company">'+company+'</div>':'')+
+        '</div>'+
+        av+
+      '</div>'+
+      '<div class="c-divider"></div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-end">'+
+        '<div class="c-info">'+info+'</div>'+
+        '<div class="c-sns">'+icons+'</div>'+
+      '</div>';
+
   } else if(layout==='split'){
     inn.classList.add('split');
     inn.innerHTML=
       '<div class="c-left">'+av+
-        '<div class="c-name">'+name+'</div>'+
-        (title?'<div class="c-title">'+title+'</div>':'')+
+        '<div class="c-name" style="font-size:.92rem;text-align:center">'+name+'</div>'+
+        (title?'<div class="c-title" style="font-size:.58rem;text-align:center;margin-top:2px">'+title+'</div>':'')+
       '</div>'+
       '<div class="c-right">'+
-        '<div><div class="c-company">'+company+'</div><div class="c-divider"></div><div class="c-info">'+info+'</div></div>'+
+        '<div>'+
+          (company?'<div class="c-company" style="font-size:.7rem;margin-bottom:6px">'+company+'</div>':'')+
+          '<div class="c-divider"></div>'+
+          '<div class="c-info">'+info+'</div>'+
+        '</div>'+
         '<div class="c-sns">'+icons+'</div>'+
       '</div>';
+
   } else if(layout==='minimal'){
     inn.classList.add('minimal');
-    var sub=[title,company].filter(Boolean).join(' · ');
     inn.innerHTML=
-      '<div class="c-name">'+name+'</div>'+
-      (sub?'<div class="c-title">'+sub+'</div>':'')+
+      '<div>'+
+        '<div class="c-name">'+name+'</div>'+
+        (title||company?'<div class="c-title" style="margin-top:5px">'+(title&&company?title+'  ·  '+company:title||company)+'</div>':'')+
+      '</div>'+
       (bio?'<div class="c-bio">'+bio+'</div>':'')+
-      '<div class="c-bottom"><div class="c-info">'+info+'</div><div class="c-sns">'+icons+'</div></div>';
+      '<div class="c-bottom-row">'+
+        '<div class="c-divider" style="width:60px;margin:0"></div>'+
+      '</div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-end">'+
+        '<div class="c-info">'+info+'</div>'+
+        '<div class="c-sns">'+icons+'</div>'+
+      '</div>';
+
   } else if(layout==='bold'){
     inn.classList.add('bold');
-    var sub2=[title,company].filter(Boolean).join(' · ');
     inn.innerHTML=
-      '<div class="c-accent"></div>'+
+      '<div class="c-corner"></div>'+
       '<div class="c-name">'+name+'</div>'+
-      (sub2?'<div class="c-company-line">'+sub2+'</div>':'')+
-      '<div class="c-divider"></div>'+
+      '<div class="c-subtitle">'+(title&&company?title+'  ·  '+company:title||company||'')+'</div>'+
+      '<div class="c-divider" style="width:80px"></div>'+
       '<div style="display:flex;justify-content:space-between;align-items:flex-end">'+
-        '<div class="c-info">'+info+'</div><div class="c-sns">'+icons+'</div>'+
+        '<div class="c-info">'+info+'</div>'+
+        '<div>'+(av)+'</div>'+
       '</div>';
   }
+
   updateShare();
 }
 
+/* ── Share ── */
 function buildData(){
-  return {name:gv('fName'),title:gv('fTitle'),company:gv('fCompany'),bio:gv('fBio'),
+  return{name:gv('fName'),title:gv('fTitle'),company:gv('fCompany'),bio:gv('fBio'),
     phone:gv('fPhone'),email:gv('fEmail'),web:gv('fWeb'),theme:theme,layout:layout,
     photo:photo,sns:snsList.slice(),svc:svcList.slice()};
 }
@@ -434,21 +549,19 @@ function updateShare(){
     ge('shUrl').textContent='';
   }
 }
-
 function copyLink(){
-  if(!gv('fName')){toast('이름을 먼저 입력해주세요!');return;}
+  if(!gv('fName')){toast('이름을 먼저 입력해주세요');return;}
   var url=getViewUrl();
   if(navigator.clipboard){
-    navigator.clipboard.writeText(url).then(function(){toast('링크 복사 완료! 카카오톡에 붙여넣기 하세요 🔗');});
+    navigator.clipboard.writeText(url).then(function(){toast('링크가 복사됐습니다 · 카카오톡에 붙여넣기 하세요');});
   } else {
-    var t=document.createElement('textarea'); t.value=url;
-    t.style.cssText='position:fixed;opacity:0'; document.body.appendChild(t);
-    t.select(); document.execCommand('copy'); document.body.removeChild(t);
-    toast('링크 복사 완료! 🔗');
+    var t=document.createElement('textarea');t.value=url;t.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);
+    toast('링크가 복사됐습니다');
   }
 }
 function shareKakao(){
-  if(!gv('fName')){toast('이름을 먼저 입력해주세요!');return;}
+  if(!gv('fName')){toast('이름을 먼저 입력해주세요');return;}
   if(navigator.share){
     navigator.share({title:gv('fName')+'의 디지털 명함',url:getViewUrl()}).catch(function(){copyLink();});
   } else { copyLink(); }
@@ -459,36 +572,44 @@ function saveImage(){
     html2canvas(ge('cardFront'),{scale:3,useCORS:true,backgroundColor:null}).then(function(cv){
       var a=document.createElement('a');
       a.download='명함_'+(gv('fName')||'card')+'.png';
-      a.href=cv.toDataURL('image/png'); a.click(); toast('저장 완료! 🎉');
+      a.href=cv.toDataURL('image/png');a.click();toast('이미지가 저장됐습니다');
     });
   },300);
 }
+
+/* ── Flip ── */
 function flipCard(){
   flipped=!flipped;
   ge('cardFlip').classList.toggle('flipped',flipped);
-  ge('flipHint').textContent=flipped?'🔄 클릭하면 앞면을 볼 수 있어요':'🔄 클릭하면 뒷면을 볼 수 있어요';
+  ge('flipHint').textContent=flipped?'카드를 클릭하면 앞면을 볼 수 있어요':'카드를 클릭하면 뒷면을 볼 수 있어요';
 }
+
+/* ── Reset ── */
 function doReset(){
   ['fName','fTitle','fCompany','fBio','fPhone','fEmail','fWeb'].forEach(function(id){var e=ge(id);if(e)e.value='';});
-  snsList=[]; svcList=[]; removePhoto(); renderSnsList(); renderSvcList();
-  history.replaceState(null,'',location.pathname); renderCard(); toast('새 명함을 만들어보세요! ✨');
+  snsList=[];svcList=[];removePhoto();renderSnsList();renderSvcList();
+  history.replaceState(null,'',location.pathname);renderCard();toast('초기화됐습니다');
 }
+
+/* ── Load URL ── */
 function loadFromUrl(){
-  var raw=new URLSearchParams(location.search).get('d'); if(!raw) return;
+  var raw=new URLSearchParams(location.search).get('d');if(!raw)return;
   try{
     var d=JSON.parse(decodeURIComponent(escape(atob(raw))));
     function sv(id,v){var e=ge(id);if(e&&v)e.value=v;}
     sv('fName',d.name);sv('fTitle',d.title);sv('fCompany',d.company);
     sv('fBio',d.bio);sv('fPhone',d.phone);sv('fEmail',d.email);sv('fWeb',d.web);
-    if(d.theme){var tb=document.querySelector('[data-t="'+d.theme+'"]');if(tb)setTheme(d.theme,tb);}
-    if(d.layout){var lb=document.querySelector('[data-l="'+d.layout+'"]');if(lb)setLayout(d.layout,lb);}
+    if(d.theme){var tb=document.querySelector('[data-t="'+d.theme+'"]');if(tb){document.querySelectorAll('.th').forEach(function(b){b.classList.remove('on');});tb.classList.add('on');theme=d.theme;ge('cardFront').className='card-face t-'+d.theme;ge('cardBack').className='card-face card-back-face t-'+d.theme;}}
+    if(d.layout){var lb=document.querySelector('[data-l="'+d.layout+'"]');if(lb){document.querySelectorAll('.lb').forEach(function(b){b.classList.remove('on');});lb.classList.add('on');layout=d.layout;}}
     if(d.photo){photo=d.photo;ge('photoCircle').innerHTML='<img src="'+photo+'">';ge('btnRemovePhoto').style.display='block';}
-    if(d.sns) snsList=d.sns;
-    if(d.svc) svcList=d.svc;
+    if(d.sns)snsList=d.sns;
+    if(d.svc)svcList=d.svc;
   }catch(e){}
 }
+
+/* ── Toast ── */
 function toast(msg){
-  var t=ge('toast'); t.textContent=msg; t.classList.add('on');
+  var t=ge('toast');t.textContent=msg;t.classList.add('on');
   setTimeout(function(){t.classList.remove('on');},2800);
 }
 </script>
