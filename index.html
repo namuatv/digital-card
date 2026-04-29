@@ -533,7 +533,10 @@ function buildData(){
     phone:gv('fPhone'),email:gv('fEmail'),web:gv('fWeb'),theme:theme,layout:layout,
     photo:photo,sns:snsList.slice(),svc:svcList.slice()};
 }
-function encData(d){ return btoa(unescape(encodeURIComponent(JSON.stringify(d)))); }
+function encData(d){
+  return btoa(unescape(encodeURIComponent(JSON.stringify(d))))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
 function getViewUrl(){
   var base=location.href.replace(/index\.html.*$/,'').replace(/\?.*$/,'');
   if(!base.endsWith('/')) base+='/';

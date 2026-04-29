@@ -139,7 +139,13 @@ var SNS_META={
   naver:{l:'네이버',e:'🟢'},tiktok:{l:'TikTok',e:'🎵'},github:{l:'GitHub',e:'🐙'}
 };
 
-function dec(s){try{return JSON.parse(decodeURIComponent(escape(atob(s))));}catch{return null;}}
+function dec(s){
+  try{
+    var b64=s.replace(/-/g,'+').replace(/_/g,'/');
+    while(b64.length%4) b64+='=';
+    return JSON.parse(decodeURIComponent(escape(atob(b64))));
+  }catch(e){return null;}
+}
 function ini(n){return n?(n.trim().length<=3?n.trim().slice(0,2):n.trim()[0]):'?';}
 
 var raw=new URLSearchParams(location.search).get('d');
