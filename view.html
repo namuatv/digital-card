@@ -2,169 +2,231 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>디지털 명함</title>
-
-  <!-- OG / SNS 미리보기 (JS로 동적 주입) -->
   <meta id="og-title"       property="og:title"       content="디지털 명함" />
-  <meta id="og-description" property="og:description"  content="디지털 명함을 확인해보세요" />
+  <meta id="og-description" property="og:description" content="디지털 명함을 확인해보세요" />
   <meta id="og-image"       property="og:image"        content="" />
-  <meta id="og-url"         property="og:url"          content="" />
   <meta property="og:type"  content="website" />
   <meta name="twitter:card" content="summary_large_image" />
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --accent: #7c5cfc;
       --accent2: #c084fc;
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --border: #2e2e3e;
     }
 
     body {
       font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0f0f13;
+      background: var(--bg);
       color: #f0f0f8;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      display: flex; flex-direction: column; align-items: center;
     }
 
-    /* ── Hero ── */
-    .hero {
+    /* ── 카드 영역 ── */
+    .card-section {
       width: 100%;
-      max-width: 480px;
-      padding: 48px 24px 32px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      text-align: center;
+      background: radial-gradient(ellipse at 50% 40%, #1a1030 0%, var(--bg) 70%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 48px 20px 32px;
+      gap: 20px;
     }
 
-    .profile-photo {
-      width: 100px; height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid rgba(124,92,252,.5);
-      box-shadow: 0 0 0 6px rgba(124,92,252,.12);
-      background: #2a2a3e;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.4rem; font-weight: 700; color: #fff;
+    /* ── Business Card (에디터와 동일한 디자인) ── */
+    .biz-card {
+      width: min(400px, calc(100vw - 40px));
+      height: 220px;
+      border-radius: 16px;
       overflow: hidden;
-    }
-    .profile-photo img { width: 100%; height: 100%; object-fit: cover; }
-
-    .hero-name { font-size: 1.7rem; font-weight: 800; }
-    .hero-title {
-      font-size: .9rem; color: rgba(255,255,255,.55);
-      display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center;
-    }
-    .hero-title .dot { color: rgba(255,255,255,.2); }
-    .hero-bio {
-      font-size: .88rem; color: rgba(255,255,255,.5);
-      line-height: 1.65; max-width: 320px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.65);
+      position: relative;
+      flex-shrink: 0;
     }
 
-    /* ── Card ── */
-    .card {
-      width: 100%; max-width: 480px;
-      background: #1a1a22;
-      border-radius: 20px;
-      padding: 20px;
-      margin: 0 16px 14px;
+    /* themes */
+    .theme-purple { background: linear-gradient(135deg,#1e1240 0%,#3b1fa8 50%,#6d28d9 100%); }
+    .theme-ocean  { background: linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%); }
+    .theme-rose   { background: linear-gradient(135deg,#3d0d1e 0%,#8b1a4a 50%,#d62976 100%); }
+    .theme-forest { background: linear-gradient(135deg,#0d1f0f 0%,#1a4a28 50%,#27ae60 100%); }
+    .theme-dark   { background: linear-gradient(135deg,#111 0%,#2c2c2c 100%); }
+    .theme-gold   { background: linear-gradient(135deg,#1a1200 0%,#5c3d00 50%,#c9960c 100%); }
+    .theme-sky    { background: linear-gradient(135deg,#0a1628 0%,#1a4a8a 50%,#3498db 100%); }
+    .theme-white  { background: linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%); }
+
+    .biz-card::after {
+      content:''; position:absolute; inset:0; pointer-events:none; opacity:.35;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
     }
 
-    .card-title {
-      font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.3);
-      text-transform: uppercase; letter-spacing: .1em;
-      margin-bottom: 14px;
+    .card-content {
+      position: relative; z-index: 1;
+      height: 100%; padding: 22px 24px;
+      display: flex;
     }
 
-    /* Contact */
-    .contact-list { display: flex; flex-direction: column; gap: 10px; }
-    .contact-row {
+    /* white theme text overrides */
+    .theme-white .card-name,
+    .theme-white .card-title,
+    .theme-white .card-company,
+    .theme-white .card-info span,
+    .theme-white .card-bio  { color: #222 !important; }
+    .theme-white .card-info .icon  { color: #666 !important; }
+    .theme-white .card-divider     { background: rgba(0,0,0,.12) !important; }
+    .theme-white .card-sns-icon    { background: rgba(0,0,0,.08) !important; color:#333 !important; }
+
+    /* shared card elements */
+    .card-name    { font-size:1.3rem; font-weight:700; color:#fff; margin-bottom:2px; }
+    .card-title   { font-size:.76rem; color:rgba(255,255,255,.65); margin-bottom:2px; }
+    .card-company { font-size:.76rem; color:rgba(255,255,255,.45); }
+    .card-divider { height:1px; background:rgba(255,255,255,.12); margin:9px 0; }
+    .card-info    { display:flex; flex-direction:column; gap:3px; }
+    .card-info .row { display:flex; align-items:center; gap:6px; }
+    .card-info .icon { font-size:.75rem; color:rgba(255,255,255,.4); width:13px; }
+    .card-info span  { font-size:.73rem; color:rgba(255,255,255,.7); }
+    .card-sns-row { display:flex; gap:5px; }
+    .card-sns-icon {
+      width:24px; height:24px; border-radius:6px;
+      background:rgba(255,255,255,.12);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.68rem; color:rgba(255,255,255,.8);
+    }
+    .card-avatar {
+      border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: #fff; overflow: hidden; flex-shrink: 0;
+    }
+    .card-avatar img { width:100%; height:100%; object-fit:cover; }
+    .card-bio { font-size:.73rem; color:rgba(255,255,255,.45); max-width:260px; line-height:1.5; }
+
+    /* Layout: Classic */
+    .layout-classic .card-content { flex-direction:column; justify-content:space-between; }
+    .layout-classic .card-top { display:flex; align-items:flex-start; justify-content:space-between; }
+    .layout-classic .card-avatar { width:50px; height:50px; font-size:1.3rem; }
+
+    /* Layout: Split */
+    .layout-split .card-content { flex-direction:row; padding:0; }
+    .layout-split .card-left {
+      width:128px; min-width:128px; height:100%;
+      background:rgba(0,0,0,.25);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:8px; padding:18px 12px;
+    }
+    .layout-split .card-avatar { width:62px; height:62px; font-size:1.5rem; }
+    .layout-split .card-name  { font-size:.92rem; text-align:center; }
+    .layout-split .card-title { font-size:.66rem; text-align:center; }
+    .layout-split .card-right { flex:1; padding:18px 16px; display:flex; flex-direction:column; justify-content:space-between; }
+    .layout-split .card-company { font-size:.8rem; margin-bottom:7px; }
+
+    /* Layout: Minimal */
+    .layout-minimal .card-content { flex-direction:column; justify-content:center; gap:7px; }
+    .layout-minimal .card-name { font-size:1.55rem; }
+    .layout-minimal .card-bottom { display:flex; justify-content:space-between; align-items:flex-end; margin-top:auto; }
+
+    /* Layout: Bold */
+    .layout-bold .card-content { flex-direction:column; justify-content:flex-end; }
+    .layout-bold .card-top-accent { position:absolute; top:0; right:0; width:150px; height:150px; background:rgba(255,255,255,.06); border-radius:0 16px 0 100%; }
+    .layout-bold .card-name    { font-size:1.65rem; line-height:1.1; margin-bottom:4px; }
+    .layout-bold .card-company { font-size:.88rem; color:rgba(255,255,255,.55); margin-bottom:11px; }
+
+    /* ── 연락처 버튼 ── */
+    .contact-section {
+      width: 100%; max-width: 440px;
+      padding: 0 20px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .contact-btn {
       display: flex; align-items: center; gap: 12px;
-      padding: 10px 12px;
-      background: #22222e; border-radius: 10px;
-      text-decoration: none; color: inherit;
-      transition: background .2s;
+      padding: 13px 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      text-decoration: none; color: #f0f0f8;
+      border: 1px solid var(--border);
+      transition: background .2s, border-color .2s;
     }
-    .contact-row:hover { background: #2a2a3e; }
+    .contact-btn:hover { background: #22222e; border-color: var(--accent); }
     .contact-icon {
-      width: 36px; height: 36px; border-radius: 9px;
+      width: 38px; height: 38px; border-radius: 10px;
       background: rgba(124,92,252,.15);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; flex-shrink: 0;
+      font-size: 1.05rem; flex-shrink: 0;
     }
-    .contact-info .label { font-size: .7rem; color: rgba(255,255,255,.35); }
-    .contact-info .value { font-size: .88rem; color: #f0f0f8; }
+    .contact-label { font-size: .7rem; color: rgba(255,255,255,.35); }
+    .contact-value { font-size: .88rem; }
 
-    /* SNS */
-    .sns-grid {
-      display: flex; flex-wrap: wrap; gap: 8px;
+    /* ── SNS ── */
+    .sns-section {
+      width: 100%; max-width: 440px;
+      padding: 0 20px 16px;
     }
+    .sns-grid { display: flex; flex-wrap: wrap; gap: 8px; }
     .sns-btn {
       display: flex; align-items: center; gap: 7px;
-      padding: 8px 14px;
-      background: #22222e; border-radius: 24px;
-      text-decoration: none; color: rgba(255,255,255,.7);
-      font-size: .82rem; transition: background .2s, color .2s;
+      padding: 9px 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 24px; text-decoration: none;
+      color: rgba(255,255,255,.7); font-size: .82rem;
+      transition: background .2s, border-color .2s;
     }
-    .sns-btn:hover { background: rgba(124,92,252,.2); color: #fff; }
+    .sns-btn:hover { background: rgba(124,92,252,.2); border-color: var(--accent); color:#fff; }
 
-    /* Services */
-    .service-list { display: flex; flex-direction: column; gap: 10px; }
-    .service-item {
-      padding: 14px 16px;
-      background: #22222e; border-radius: 12px;
+    /* ── 서비스 소개 ── */
+    .services-section {
+      width: 100%; max-width: 440px;
+      padding: 0 20px 16px;
+    }
+    .section-label {
+      font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.3);
+      text-transform: uppercase; letter-spacing: .1em;
+      margin-bottom: 10px;
+    }
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-left: 3px solid var(--accent);
+      border-radius: 12px; padding: 14px 16px;
+      margin-bottom: 8px;
     }
-    .service-item .s-title { font-size: .9rem; font-weight: 600; margin-bottom: 4px; }
-    .service-item .s-desc { font-size: .8rem; color: rgba(255,255,255,.5); line-height: 1.6; }
+    .service-card .s-title { font-size: .9rem; font-weight: 600; margin-bottom: 4px; }
+    .service-card .s-desc  { font-size: .8rem; color: rgba(255,255,255,.5); line-height: 1.65; }
 
-    /* Action bar */
-    .action-bar {
-      width: 100%; max-width: 480px;
-      padding: 16px 16px 8px;
-      display: flex; gap: 10px;
+    /* ── 하단 공유/CTA ── */
+    .bottom-section {
+      width: 100%; max-width: 440px;
+      padding: 4px 20px 48px;
+      display: flex; flex-direction: column; gap: 10px;
     }
+    .share-row { display: flex; gap: 8px; }
     .btn {
       flex: 1; padding: 13px;
       border-radius: 12px; border: none;
-      font-size: .9rem; font-weight: 700;
-      cursor: pointer; transition: all .2s;
-    }
-    .btn-kakao {
-      background: #FEE500; color: #3C1E1E;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .btn-kakao:hover { filter: brightness(1.05); }
-    .btn-share {
-      background: #1a1a22; color: #f0f0f8;
-      border: 1px solid #2e2e3e;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .btn-share:hover { border-color: var(--accent); }
-
-    /* CTA footer */
-    .footer-cta {
-      padding: 20px 16px 40px;
-      text-align: center;
-    }
-    .footer-cta p { font-size: .78rem; color: rgba(255,255,255,.3); margin-bottom: 12px; }
-    .btn-make {
-      display: inline-block;
-      padding: 11px 28px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; border-radius: 24px;
       font-size: .88rem; font-weight: 700;
-      text-decoration: none; transition: opacity .2s;
+      cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-kakao { background: #FEE500; color: #3C1E1E; }
+    .btn-kakao:hover { filter: brightness(1.05); }
+    .btn-copy  { background: var(--surface); color: #f0f0f8; border: 1px solid var(--border); }
+    .btn-copy:hover  { border-color: var(--accent); }
+    .btn-make {
+      width: 100%; padding: 13px;
+      border-radius: 12px; border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-size: .88rem; font-weight: 700;
+      cursor: pointer; text-decoration: none;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: opacity .2s;
     }
     .btn-make:hover { opacity: .88; }
 
-    /* Toast */
+    /* ── Toast ── */
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
       background: #333; color: #fff;
@@ -175,154 +237,149 @@
     }
     .toast.show { opacity: 1; }
 
-    /* Empty state */
+    /* ── 빈 상태 ── */
     .empty {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 14px;
-      padding: 60px 24px; text-align: center;
+      padding: 80px 24px; text-align: center;
     }
-    .empty .icon { font-size: 3rem; }
-    .empty h2 { font-size: 1.1rem; }
-    .empty p { font-size: .85rem; color: rgba(255,255,255,.4); }
   </style>
 </head>
 <body>
-
 <div id="app"></div>
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── Decode ──
-  function decodeData(str) {
-    try { return JSON.parse(decodeURIComponent(escape(atob(str)))); } catch { return null; }
-  }
-
   const SNS_META = {
-    threads:  { label:'Threads',      icon:'🧵' },
-    instagram:{ label:'Instagram',    icon:'📸' },
-    youtube:  { label:'YouTube',      icon:'▶️' },
-    linkedin: { label:'LinkedIn',     icon:'💼' },
-    twitter:  { label:'X',            icon:'✖️' },
-    kakao:    { label:'카카오',        icon:'💬' },
-    naver:    { label:'네이버 블로그', icon:'🟢' },
-    tiktok:   { label:'TikTok',       icon:'🎵' },
-    github:   { label:'GitHub',       icon:'🐙' },
+    threads:  {label:'Threads',      icon:'🧵'},
+    instagram:{label:'Instagram',    icon:'📸'},
+    youtube:  {label:'YouTube',      icon:'▶️'},
+    linkedin: {label:'LinkedIn',     icon:'💼'},
+    twitter:  {label:'X',            icon:'✖️'},
+    kakao:    {label:'카카오',        icon:'💬'},
+    naver:    {label:'네이버 블로그', icon:'🟢'},
+    tiktok:   {label:'TikTok',       icon:'🎵'},
+    github:   {label:'GitHub',       icon:'🐙'},
   };
 
-  const params = new URLSearchParams(location.search);
-  const raw    = params.get('d');
-  const d      = raw ? decodeData(raw) : null;
-  const app    = document.getElementById('app');
+  function decode(str) {
+    try { return JSON.parse(decodeURIComponent(escape(atob(str)))); } catch { return null; }
+  }
+  function initials(n) { return n ? (n.length<=3 ? n.slice(0,2) : n[0]) : '?'; }
+
+  const raw = new URLSearchParams(location.search).get('d');
+  const d   = raw ? decode(raw) : null;
+  const app = document.getElementById('app');
 
   if (!d || !d.name) {
     app.innerHTML = `
       <div class="empty">
-        <div class="icon">🪪</div>
-        <h2>명함 정보를 찾을 수 없어요</h2>
-        <p>링크가 잘못됐거나 만료됐을 수 있어요</p>
-        <a class="btn-make" href="index.html">내 명함 만들기</a>
+        <div style="font-size:3rem">🪪</div>
+        <h2 style="font-size:1.1rem">명함 정보를 찾을 수 없어요</h2>
+        <p style="font-size:.85rem;color:rgba(255,255,255,.4)">링크가 잘못됐을 수 있어요</p>
+        <a class="btn-make" href="index.html" style="margin-top:8px;max-width:200px">내 명함 만들기 →</a>
       </div>`;
   } else {
-    // Update OG tags
-    document.title = `${d.name}의 디지털 명함`;
-    document.getElementById('og-title').content       = `${d.name} · ${d.title || ''} | 디지털 명함`;
-    document.getElementById('og-description').content = d.bio || `${d.company || ''} ${d.title || ''}`;
-    document.getElementById('og-url').content         = location.href;
+    // OG 태그 업데이트
+    document.title = `${d.name} | 디지털 명함`;
+    document.getElementById('og-title').content       = `${d.name}${d.title?' · '+d.title:''}`;
+    document.getElementById('og-description').content = d.bio || `${d.company||''} ${d.title||''}`.trim();
     if (d.img) document.getElementById('og-image').content = d.img;
 
-    // ── Render ──
-    const initials = n => n ? (n.length <= 3 ? n.slice(0,2) : n[0]) : '?';
+    const theme  = d.theme  || 'purple';
+    const layout = d.layout || 'classic';
 
-    const photoHtml = d.img
-      ? `<div class="profile-photo"><img src="${d.img}" alt="프로필" /></div>`
-      : `<div class="profile-photo">${initials(d.name)}</div>`;
+    // ── 카드 HTML ──
+    const avatarHtml = sz => d.img
+      ? `<div class="card-avatar" style="width:${sz}px;height:${sz}px"><img src="${d.img}" alt="프로필"/></div>`
+      : `<div class="card-avatar" style="width:${sz}px;height:${sz}px;font-size:${sz*.26}rem">${initials(d.name)}</div>`;
 
-    const titleParts = [d.title, d.company].filter(Boolean);
-    const titleHtml  = titleParts.map((t,i) =>
-      i < titleParts.length-1 ? `${t} <span class="dot">·</span>` : t
-    ).join(' ');
+    const infoRows = () => {
+      let r = '';
+      if(d.phone) r+=`<div class="row"><span class="icon">📞</span><span>${d.phone}</span></div>`;
+      if(d.email) r+=`<div class="row"><span class="icon">✉️</span><span>${d.email}</span></div>`;
+      if(d.web)   r+=`<div class="row"><span class="icon">🌐</span><span>${d.web}</span></div>`;
+      return r;
+    };
+    const snsIcons = () => (d.sns||[]).filter(s=>s.handle).map(s=>{
+      const m = SNS_META[s.platform]||{icon:'🔗'};
+      return `<div class="card-sns-icon">${m.icon}</div>`;
+    }).join('');
 
-    const contactHtml = (() => {
-      const rows = [];
-      if (d.phone) rows.push(`<a class="contact-row" href="tel:${d.phone}"><div class="contact-icon">📞</div><div class="contact-info"><div class="label">전화</div><div class="value">${d.phone}</div></div></a>`);
-      if (d.email) rows.push(`<a class="contact-row" href="mailto:${d.email}"><div class="contact-icon">✉️</div><div class="contact-info"><div class="label">이메일</div><div class="value">${d.email}</div></div></a>`);
-      if (d.web)   rows.push(`<a class="contact-row" href="${d.web.startsWith('http')?d.web:'https://'+d.web}" target="_blank"><div class="contact-icon">🌐</div><div class="contact-info"><div class="label">웹사이트</div><div class="value">${d.web}</div></div></a>`);
-      return rows.length ? `<div class="card"><div class="card-title">연락처</div><div class="contact-list">${rows.join('')}</div></div>` : '';
-    })();
+    let cardInner = '';
+    if (layout==='classic') {
+      cardInner=`<div class="card-top"><div><div class="card-name">${d.name}</div><div class="card-title">${d.title||''}</div><div class="card-company">${d.company||''}</div></div>${avatarHtml(50)}</div><div><div class="card-divider"></div><div class="card-info">${infoRows()}</div></div><div class="card-sns-row">${snsIcons()}</div>`;
+    } else if (layout==='split') {
+      cardInner=`<div class="card-left">${avatarHtml(62)}<div class="card-name">${d.name}</div><div class="card-title">${d.title||''}</div></div><div class="card-right"><div><div class="card-company">${d.company||''}</div><div class="card-divider"></div><div class="card-info">${infoRows()}</div></div><div class="card-sns-row">${snsIcons()}</div></div>`;
+    } else if (layout==='minimal') {
+      cardInner=`<div class="card-name">${d.name}</div><div class="card-title">${[d.title,d.company].filter(Boolean).join(' · ')}</div><div class="card-bio">${d.bio||''}</div><div class="card-bottom"><div class="card-info">${infoRows()}</div><div class="card-sns-row">${snsIcons()}</div></div>`;
+    } else if (layout==='bold') {
+      cardInner=`<div class="card-top-accent"></div><div class="card-name">${d.name}</div><div class="card-company">${[d.title,d.company].filter(Boolean).join(' · ')}</div><div class="card-divider"></div><div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="card-info">${infoRows()}</div><div class="card-sns-row">${snsIcons()}</div></div>`;
+    }
 
-    const snsHtml = (() => {
-      if (!d.sns?.length) return '';
-      const btns = d.sns.filter(s=>s.handle).map(s => {
-        const m = SNS_META[s.platform] || {label:s.platform, icon:'🔗'};
-        const href = s.handle.startsWith('http') ? s.handle : '#';
-        return `<a class="sns-btn" href="${href}" target="_blank">${m.icon} ${m.label} <span style="color:rgba(255,255,255,.4)">${s.handle}</span></a>`;
-      });
-      return btns.length ? `<div class="card"><div class="card-title">SNS</div><div class="sns-grid">${btns.join('')}</div></div>` : '';
-    })();
+    // ── 연락처 버튼 ──
+    const contactBtns = [
+      d.phone && `<a class="contact-btn" href="tel:${d.phone}"><div class="contact-icon">📞</div><div><div class="contact-label">전화</div><div class="contact-value">${d.phone}</div></div></a>`,
+      d.email && `<a class="contact-btn" href="mailto:${d.email}"><div class="contact-icon">✉️</div><div><div class="contact-label">이메일</div><div class="contact-value">${d.email}</div></div></a>`,
+      d.web   && `<a class="contact-btn" href="${d.web.startsWith('http')?d.web:'https://'+d.web}" target="_blank"><div class="contact-icon">🌐</div><div><div class="contact-label">웹사이트</div><div class="contact-value">${d.web}</div></div></a>`,
+    ].filter(Boolean).join('');
 
-    const servicesHtml = (() => {
-      if (!d.services?.length) return '';
-      const items = d.services.filter(s=>s.title||s.desc).map(s =>
-        `<div class="service-item"><div class="s-title">${s.title||''}</div>${s.desc?`<div class="s-desc">${s.desc}</div>`:''}</div>`
-      );
-      return items.length ? `<div class="card"><div class="card-title">서비스 소개</div><div class="service-list">${items.join('')}</div></div>` : '';
-    })();
+    // ── SNS 버튼 ──
+    const snsBtns = (d.sns||[]).filter(s=>s.handle).map(s=>{
+      const m = SNS_META[s.platform]||{label:s.platform,icon:'🔗'};
+      const href = s.handle.startsWith('http') ? s.handle : '#';
+      return `<a class="sns-btn" href="${href}" target="_blank">${m.icon} ${m.label}<span style="color:rgba(255,255,255,.35);margin-left:4px">${s.handle}</span></a>`;
+    }).join('');
+
+    // ── 서비스 카드 ──
+    const svcCards = (d.services||[]).filter(s=>s.title||s.desc).map(s=>
+      `<div class="service-card"><div class="s-title">${s.title||''}</div>${s.desc?`<div class="s-desc">${s.desc}</div>`:''}</div>`
+    ).join('');
 
     app.innerHTML = `
-      <div class="hero">
-        ${photoHtml}
-        <div class="hero-name">${d.name}</div>
-        ${titleHtml ? `<div class="hero-title">${titleHtml}</div>` : ''}
-        ${d.bio ? `<div class="hero-bio">${d.bio}</div>` : ''}
+      <div class="card-section">
+        <div class="biz-card theme-${theme} layout-${layout}">
+          <div class="card-content">${cardInner}</div>
+        </div>
+        ${d.bio ? `<p style="font-size:.85rem;color:rgba(255,255,255,.5);text-align:center;max-width:340px;line-height:1.6">${d.bio}</p>` : ''}
       </div>
 
-      ${contactHtml}
-      ${snsHtml}
-      ${servicesHtml}
+      ${contactBtns ? `<div class="contact-section">${contactBtns}</div>` : ''}
+      ${snsBtns     ? `<div class="sns-section"><div class="section-label">SNS</div><div class="sns-grid">${snsBtns}</div></div>` : ''}
+      ${svcCards    ? `<div class="services-section"><div class="section-label">서비스 소개</div>${svcCards}</div>` : ''}
 
-      <div class="action-bar">
-        <button class="btn btn-kakao" onclick="shareKakao()">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.86 1.5 1.5 4.14 1.5 7.38c0 2.07 1.29 3.9 3.24 4.98l-.78 2.91c-.06.21.18.39.36.27l3.39-2.22c.42.06.84.09 1.29.09 4.14 0 7.5-2.64 7.5-5.88S13.14 1.5 9 1.5z" fill="#3C1E1E"/></svg>
-          카카오톡 공유
-        </button>
-        <button class="btn btn-share" onclick="shareLink()">🔗 링크 복사</button>
-      </div>
-
-      <div class="footer-cta">
-        <p>이 명함은 디지털 명함 메이커로 만들었어요</p>
-        <a class="btn-make" href="index.html">나도 명함 만들기 →</a>
+      <div class="bottom-section">
+        <div class="share-row">
+          <button class="btn btn-kakao" onclick="shareKakao()">
+            <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.86 1.5 1.5 4.14 1.5 7.38c0 2.07 1.29 3.9 3.24 4.98l-.78 2.91c-.06.21.18.39.36.27l3.39-2.22c.42.06.84.09 1.29.09 4.14 0 7.5-2.64 7.5-5.88S13.14 1.5 9 1.5z" fill="#3C1E1E"/></svg>
+            카카오톡 공유
+          </button>
+          <button class="btn btn-copy" onclick="copyLink()">🔗 링크 복사</button>
+        </div>
+        <a class="btn-make" href="index.html">🪪 나도 명함 만들기</a>
       </div>
     `;
   }
 
-  // ── Share ──
-  function shareLink() {
+  function copyLink() {
     navigator.clipboard.writeText(location.href)
-      .then(() => showToast('링크가 복사됐어요! 🔗'))
-      .catch(() => {
-        const input = document.createElement('input');
-        input.value = location.href;
-        document.body.appendChild(input);
-        input.select(); document.execCommand('copy');
-        document.body.removeChild(input);
-        showToast('링크가 복사됐어요! 🔗');
+      .then(()=>showToast('링크 복사 완료! 카카오톡에 붙여넣기 하세요 🔗'))
+      .catch(()=>{
+        const el=document.createElement('textarea');
+        el.value=location.href; el.style.position='fixed'; el.style.opacity='0';
+        document.body.appendChild(el); el.select(); document.execCommand('copy');
+        document.body.removeChild(el);
+        showToast('링크 복사 완료! 🔗');
       });
   }
 
   function shareKakao() {
     if (navigator.share) {
-      navigator.share({
-        title: document.title,
-        text: d ? `${d.name}의 디지털 명함` : '디지털 명함',
-        url: location.href
-      }).catch(() => shareLink());
+      navigator.share({ title: document.title, url: location.href })
+        .catch(() => copyLink());
     } else {
-      // Fallback: KakaoTalk 앱 딥링크 (PC에서는 링크 복사)
-      const kakaoUrl = `kakaolink://send?text=${encodeURIComponent(location.href)}`;
-      const a = document.createElement('a');
-      a.href = kakaoUrl;
-      a.click();
-      setTimeout(() => shareLink(), 800);
+      copyLink();
+      showToast('링크 복사 완료! 카카오톡 채팅창에 붙여넣기 하세요 💬');
     }
   }
 
@@ -330,7 +387,7 @@
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
+    setTimeout(()=>t.classList.remove('show'), 3000);
   }
 </script>
 </body>
