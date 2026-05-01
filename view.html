@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--gold:#b8942a;--gold2:#d4aa40;--bg:#f4f1eb;--sur:#ffffff;--bdr:#e2dbd0;--tx:#1c1810;--mu:#9a8f7e}
@@ -229,9 +230,9 @@ if(!d||!d.name){
     (svcs?'<div class="section"><div class="sec-label">서비스 소개</div><div class="svc-list">'+svcs+'</div></div>':'')+
     '<div class="bottom">'+
       '<div class="share-row">'+
-        '<button class="btn btn-kakao" onclick="shareKakao()">'+
+        '<button class="btn btn-kakao" id="btnKakao" onclick="shareKakao()">'+
           '<svg width="15" height="15" viewBox="0 0 18 18"><path d="M9 1.5C4.86 1.5 1.5 4.14 1.5 7.38c0 2.07 1.29 3.9 3.24 4.98l-.78 2.91c-.06.21.18.39.36.27l3.39-2.22c.42.06.84.09 1.29.09 4.14 0 7.5-2.64 7.5-5.88S13.14 1.5 9 1.5z" fill="#3C1E1E"/></svg>'+
-          ' 카카오톡 공유'+
+          ' <span id="kakaoLabel">이미지로 공유</span>'+
         '</button>'+
         '<button class="btn btn-copy" onclick="copyLink()">🔗 링크 복사</button>'+
       '</div>'+
@@ -250,6 +251,47 @@ function copyLink(){
     });
 }
 function shareKakao(){
+  var btn=document.getElementById('btnKakao');
+  var lbl=document.getElementById('kakaoLabel');
+  var cardEl=document.querySelector('.biz-card');
+
+  if(!cardEl||!window.html2canvas){shareUrl();return;}
+
+  lbl.textContent='캡처 중…';
+  btn.disabled=true;
+
+  html2canvas(cardEl,{scale:3,useCORS:true,backgroundColor:null,logging:false})
+    .then(function(canvas){
+      canvas.toBlob(function(blob){
+        var file=new File([blob],(d.name||'명함')+'.png',{type:'image/png'});
+        lbl.textContent='이미지로 공유';
+        btn.disabled=false;
+
+        if(navigator.canShare&&navigator.canShare({files:[file]})){
+          navigator.share({
+            files:[file],
+            title:d.name+' 명함',
+            text:(d.title?d.title+'\n':'')+(d.company?d.company+'\n':'')+location.href
+          }).catch(function(){shareUrl();});
+        } else {
+          /* 파일 공유 미지원 환경 → 이미지 다운로드 후 URL 공유 */
+          var a=document.createElement('a');
+          a.href=URL.createObjectURL(blob);
+          a.download=(d.name||'명함')+'.png';
+          a.click();
+          showToast('이미지를 저장했어요 · 카카오톡에 직접 전송하세요');
+          setTimeout(function(){shareUrl();},800);
+        }
+      },'image/png');
+    })
+    .catch(function(){
+      lbl.textContent='이미지로 공유';
+      btn.disabled=false;
+      shareUrl();
+    });
+}
+
+function shareUrl(){
   if(navigator.share){
     navigator.share({title:document.title,url:location.href}).catch(function(){copyLink();});
   } else { copyLink(); }
